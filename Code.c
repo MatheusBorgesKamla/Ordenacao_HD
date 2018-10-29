@@ -38,7 +38,7 @@ void Gera_Campo1(int n, int *vetor)
         }
         vetor[i] = aux[indice];
         aux[indice] = -1;
-    }
+    }  
     indice = rand()%50000;
     while(aux[indice]==(-1)){
         indice = rand()%50000;
@@ -54,5 +54,5 @@ void Gera_Campo1(int n, int *vetor)
 void Gera_Campo2(int n, char *vetor[])
 {
     /*aux[100][30] = {"GOD", "WAR", "SNIPER", "FIGTH", "BAD", "WEAPON", "FIRE", "ARMY", "ADVANCED", "GHOST", "CHICKEN", "GROW", "HIGH", "MAGIC", "WORLD", "ROCK", "BATTLE", "SNOW", "GAME", "YELLOW", "CALL", "BLACK", "OPS", "HACKER", "SOLDIER", "ZOMBIE", "DRAGONS", "SHIELD", "COLOSSUS", "SHADOW", "DIRTY", "TITANS", "BREAKING", "CRAZY", "NIGTH", "MUTANTS",
-    "HERO", "SPEED", "" };*/
+    "HERO", "SPEED", "DUTY", "WORLD", "NAME", "TRIBAL", "CIVILIZATION", "ALIEN", "PREDATOR", "BOOK", "WORD", "PRAY", "CHURCH", "KNIFE", "SWORD", "AXE", "STRONG", "POTTER", "DIVISION", "ROYALE", "UNKNOW", "BATTLEGROUND", "BATTLEFIELD", "" };*/
 }
