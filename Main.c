@@ -11,9 +11,13 @@ int main(int argc, char const *argv[])
         int n = atoi(argv[3]);
         REGISTRO *reg = (REGISTRO *)malloc(n*sizeof(REGISTRO));
         GeraDados(n,reg);
-        printf("Rodou !!");
+        if(GerarArquivo(n,reg,argv[2])){
+            printf("Arquivo gerado.");
+        }else{
+            printf("Falha no processamento.");
+        }
     }else{
-        printf("Erro na passagem de parâmetros\n");
+        printf("Falha no processamento.\n");
     }
     return 0;
 }

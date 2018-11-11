@@ -26,12 +26,30 @@ void GeraDados(int n, REGISTRO *reg)
         strcpy(reg[i].campo2,campo2[i]);
         strcpy(reg[i].campo3,campo3[i]);
         strcpy(reg[i].campo4,campo4[i]);
-        printf("REGISTRO[%d] : %d | %s | %s | %s --",(i+1),reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
+        //printf("REGISTRO[%d] : %d | %s | %s | %s --",(i+1),reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
     }
-    /*free(campo1);
+    free(campo1);
     free(campo2);
     free(campo3);
-    free(campo4);*/
+    free(campo4);
+}
+
+int GerarArquivo(int n, REGISTRO *reg, char* arq_name){
+    strcat(arq_name,".dat");
+    FILE *arq = fopen(arq_name,"w+b");
+    if(arq == NULL){
+        return 0;
+    }
+    char status[8]= "STATUS:";
+    char status_val = 0;
+    fwrite(status,sizeof(status),1,arq);
+    fwrite(&status_val,sizeof(char),1,arq);
+    fwrite(reg,sizeof(REGISTRO),n,arq);
+    status_val = 1;
+    fseek(arq,sizeof(status),SEEK_SET);
+    fwrite(&status_val,sizeof(char),1,arq);
+    fclose(arq);
+    return 1;
 }
 
 void Gera_Campo1(int n, int *vetor)
