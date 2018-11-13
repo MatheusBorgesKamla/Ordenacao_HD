@@ -70,6 +70,7 @@ int LeArquivo(REGISTRO **reg, char* arq_name, int *n){
     *n = *n/(sizeof(REGISTRO));
     *reg = (REGISTRO**)malloc((*n)*sizeof(REGISTRO)); 
     char status = '0';
+    rewind(arq);
     fwrite(&status,sizeof(char),1,arq);
     fseek(arq,sizeof(char),SEEK_SET);
     fread(*reg,sizeof(REGISTRO),*n,arq);
