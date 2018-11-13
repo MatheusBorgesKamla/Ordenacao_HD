@@ -14,7 +14,7 @@ void GeraDados(int n, REGISTRO *reg)
     {
         campo2[i] = (char *)malloc(30 * sizeof(char));
         campo3[i] = (char *)malloc(20 * sizeof(char));
-        campo4[i] = (char *)malloc(10 * sizeof(char));
+        campo4[i] = (char *)malloc(11 * sizeof(char));
 
     }
     Gera_Campo1(n, campo1);
@@ -40,14 +40,42 @@ int GerarArquivo(int n, REGISTRO *reg, char* arq_name){
     if(arq == NULL){
         return 0;
     }
-    char status[8]= "STATUS:";
-    char status_val = 0;
-    fwrite(status,sizeof(status),1,arq);
-    fwrite(&status_val,sizeof(char),1,arq);
+    char status = '0';
+    fwrite(&status,sizeof(char),1,arq);
     fwrite(reg,sizeof(REGISTRO),n,arq);
-    status_val = 1;
-    fseek(arq,sizeof(status),SEEK_SET);
-    fwrite(&status_val,sizeof(char),1,arq);
+    status = '1';
+    rewind(arq);
+    fwrite(&status,sizeof(char),1,arq);
+    fclose(arq);
+    return 1;
+}
+
+
+int LeArquivo(REGISTRO **reg, char* arq_name, int *n){
+    strcat(arq_name,".dat");
+    FILE *arq = fopen(arq_name,"r+b");
+    if(arq == NULL){
+        return -1;
+    }
+    /* Pula até o fim do arquivo */
+    fseek(arq, 0, SEEK_END);
+    /* Lê o indicador de posição (em bytes)*/ 
+    *n = ftell(arq);
+    if(*n==0){
+        //Arquivo vazio
+        fclose(arq);
+        return 0;   
+    }
+    *n = *n - sizeof(char);
+    *n = *n/(sizeof(REGISTRO));
+    *reg = (REGISTRO**)malloc((*n)*sizeof(REGISTRO)); 
+    char status = '0';
+    fwrite(&status,sizeof(char),1,arq);
+    fseek(arq,sizeof(char),SEEK_SET);
+    fread(*reg,sizeof(REGISTRO),*n,arq);
+    status = '1';
+    rewind(arq);
+    fwrite(&status,sizeof(char),1,arq);
     fclose(arq);
     return 1;
 }
