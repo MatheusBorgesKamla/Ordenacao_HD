@@ -34,11 +34,10 @@ int main(int argc, char const *argv[])
         }
 
     }else if(!strcmp(argv[1], "3") && argc == 3){
-
+        //Funcionalidade 3 :
         REGISTRO **reg;   //Cria um registro
         int n;           //Variável que irá guardar o numero de registros
         int teste = LeArquivo(reg, argv[2], &n);   //Chama a função que lê o arquivo e o armazena no registro
-
         if(teste == -1){
             printf("Falha no processamento.");
             return 0;

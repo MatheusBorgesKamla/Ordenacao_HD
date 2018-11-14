@@ -351,12 +351,10 @@ void Gera_Campo4(int n, char *vetor[])
 
 void merge(REGISTRO **reg, int comeco, int meio, int fim)
 {
-
-for(int i=0;i<fim;i++)
-              
-    printf("%d | %s | %s | %s \n",reg[i]->campo1,reg[i]->campo2,reg[i]->campo3,reg[i]->campo4);
             
    // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
+    /*for(int i=0;i<6000;i++)
+        printf("%d %s %s %s \n",reg[0][i].campo1,reg[0][i].campo2,reg[0][i].campo3,reg[0][i].campo4);*/
     int com1 = comeco, com2 = meio + 1, comAux = 0, tam = fim - comeco + 1;
     REGISTRO **vetAux;
     vetAux = (REGISTRO *)malloc(tam * sizeof(REGISTRO));
@@ -364,19 +362,19 @@ for(int i=0;i<fim;i++)
     while (com1 <= meio && com2 <= fim)
     {
 
-        if (reg[com1]->campo1 < reg[com2]->campo1) 
+        if (reg[0][com1].campo1 < reg[0][com2].campo1) 
         {
-            vetAux[comAux] = reg[com1];
+            vetAux[0][comAux] = reg[0][com1];
             com1++;
         }
-        else if(reg[com1]->campo1 > reg[com2]->campo1) 
+        else if(reg[0][com1].campo1 > reg[0][com2].campo1) 
         {
-            vetAux[comAux] = reg[com2];
+            vetAux[0][comAux] = reg[0][com2];
             com2++;
         }
-        else if(reg[com1]->campo1 == reg[com2]->campo1)  //Se o campo1 dos dois registros forem iguais, analisa o campo2
+        else if(reg[0][com1].campo1 == reg[0][com2].campo1)  //Se o campo1 dos dois registros forem iguais, analisa o campo2
         {
-            int length1C2 = strlen(reg[com1]->campo2), length2C2 = strlen(reg[com2]->campo2), lenAuxC2; //Pega o tamanho de cada string
+            int length1C2 = strlen(reg[0][com1].campo2), length2C2 = strlen(reg[0][com2].campo2), lenAuxC2; //Pega o tamanho de cada string
             if(length1C2 < length2C2) //Aloca no lenAuxC2 o menor tamanho de string
                 lenAuxC2 = length1C2;
             else 
@@ -385,17 +383,17 @@ for(int i=0;i<fim;i++)
             int compareC2; //Variável que serve para dar um status na comparação das strings
             for(int i = 0; i < lenAuxC2; i++) //Faz um for que vai percorrer as strings comparando char por char
             {
-                if(reg[com1]->campo2[i] < reg[com2]->campo2[i]) //Se o caractere 1 for menor que o 2, compareC2 recebe um valor negativo
+                if(reg[0][com1].campo2[i] < reg[0][com2].campo2[i]) //Se o caractere 1 for menor que o 2, compareC2 recebe um valor negativo
                 {
                      compareC2 = -1;
                      break;
                 }
-                else if(reg[com1]->campo2[i] > reg[com2]->campo2[i])  //Se o caractere 1 for maior que o 2, compareC2 recebe um valor positivo
+                else if(reg[0][com1].campo2[i] > reg[0][com2].campo2[i])  //Se o caractere 1 for maior que o 2, compareC2 recebe um valor positivo
                 {
                     compareC2 = 1;
                     break;
                 }
-                else if(reg[com1]->campo2[i] == reg[com2]->campo2[i])
+                else if(reg[0][com1].campo2[i] == reg[0][com2].campo2[i])
                 {
                     if(i == (lenAuxC2-1)) //Se estiver no último elemento da menor string e até aí elas forem iguais, ela virá antes da maior
                     {
@@ -412,18 +410,18 @@ for(int i=0;i<fim;i++)
             
             if(compareC2 < 0) //Se compareC2 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
             {
-                vetAux[comAux] = reg[com1];
+                vetAux[0][comAux] = reg[0][com1];
                 com1++;
             }
             else if(compareC2 > 0) //compareC2 maior do que zero --> conteúdo da string1 é maior do que string2
             {
-               vetAux[comAux] = reg[com2];
+               vetAux[0][comAux] = reg[0][com2];
                com2++; 
             }
             else if (compareC2 == 0) //Se compareC2 for igual a zero, o conteúdo das duas string é igual
             {                        //Nesse caso, passa para o próximo campo para fazer a análise
 
-                int length1C3 = strlen(reg[com1]->campo3), length2C3 = strlen(reg[com2]->campo3), lenAuxC3; //Pega o tamanho de cada string
+                int length1C3 = strlen(reg[0][com1].campo3), length2C3 = strlen(reg[0][com2].campo3), lenAuxC3; //Pega o tamanho de cada string
                 if (length1C3 < length2C3)                                                                //Aloca no lenAuxC3 o menor tamanho de string
                     lenAuxC3 = length1C3;
                 else
@@ -432,17 +430,17 @@ for(int i=0;i<fim;i++)
                 int compareC3;                     //Variável que serve para dar um status na comparação das strings
                 for (int i = 0; i < lenAuxC3; i++) //Faz um for que vai percorrer as strings comparando char por char
                 {
-                    if (reg[com1]->campo3[i] < reg[com2]->campo3[i]) //Se o caractere 1 for menor que o 2, compareC3 recebe um valor negativo
+                    if (reg[0][com1].campo3[i] < reg[0][com2].campo3[i]) //Se o caractere 1 for menor que o 2, compareC3 recebe um valor negativo
                     {
                         compareC3 = -1;
                         break;
                     }
-                    else if (reg[com1]->campo3[i] > reg[com2]->campo3[i]) //Se o caractere 1 for maior que o 2, compareC2 recebe um valor positivo
+                    else if (reg[0][com1].campo3[i] > reg[0][com2].campo3[i]) //Se o caractere 1 for maior que o 2, compareC2 recebe um valor positivo
                     {
                         compareC3 = 1;
                         break;
                     }
-                    else if (reg[com1]->campo3[i] == reg[com2]->campo3[i])
+                    else if (reg[0][com1].campo3[i] == reg[0][com2].campo3[i])
                     {
                         if (i == (lenAuxC3 - 1)) //Se estiver no último elemento da menor string e até aí elas forem iguais, ela virá antes da maior
                         {
@@ -458,17 +456,17 @@ for(int i=0;i<fim;i++)
                 }
                 if (compareC3 < 0) //Se compareC3 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
                 {
-                    vetAux[comAux] = reg[com1];
+                    vetAux[0][comAux] = reg[0][com1];
                     com1++;
                 }
                 else if (compareC3 > 0) //compareC3 maior do que zero --> conteúdo da string1 é maior do que string2
                 {
-                    vetAux[comAux] = reg[com2];
+                    vetAux[0][comAux] = reg[0][com2];
                     com2++;
                 }
                 else if (compareC3 == 0) //Se compareC3 for igual a zero, o conteúdo das duas string é igual
                 {
-                    int length1C4 = strlen(reg[com1]->campo4), length2C4 = strlen(reg[com2]->campo4), lenAuxC4; //Pega o tamanho de cada string
+                    int length1C4 = strlen(reg[0][com1].campo4), length2C4 = strlen(reg[0][com2].campo4), lenAuxC4; //Pega o tamanho de cada string
                     if (length1C4 < length2C4)                                                                //Aloca no lenAuxC4 o menor tamanho de string
                         lenAuxC4 = length1C4;
                     else
@@ -477,17 +475,17 @@ for(int i=0;i<fim;i++)
                     int compareC4;                     //Variável que serve para dar um status na comparação das strings
                     for (int i = 0; i < lenAuxC4; i++) //Faz um for que vai percorrer as strings comparando char por char
                     {
-                        if (reg[com1]->campo4[i] < reg[com2]->campo4[i]) //Se o caractere 1 for menor que o 2, compareC4 recebe um valor negativo
+                        if (reg[0][com1].campo4[i] < reg[0][com2].campo4[i]) //Se o caractere 1 for menor que o 2, compareC4 recebe um valor negativo
                         {
                             compareC4 = -1;
                             break;
                         }
-                        else if (reg[com1]->campo4[i] > reg[com2]->campo4[i]) //Se o caractere 1 for maior que o 2, compareC4 recebe um valor positivo
+                        else if (reg[0][com1].campo4[i] > reg[0][com2].campo4[i]) //Se o caractere 1 for maior que o 2, compareC4 recebe um valor positivo
                         {
                             compareC4 = 1;
                             break;
                         }
-                        else if (reg[com1]->campo4[i] == reg[com2]->campo4[i])
+                        else if (reg[0][com1].campo4[i] == reg[0][com2].campo4[i])
                         {
                             if (i == (lenAuxC4 - 1)) //Se estiver no último elemento da menor string e até aí elas forem iguais, ela virá antes da maior
                             {
@@ -503,17 +501,17 @@ for(int i=0;i<fim;i++)
                     }
                     if (compareC4 < 0) //Se compareC4 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
                     {
-                        vetAux[comAux] = reg[com1];
+                        vetAux[0][comAux] = reg[0][com1];
                         com1++;
                     }
                     else if (compareC4 > 0) //compareC4 maior do que zero --> conteúdo da string1 é maior do que string2
                     {
-                        vetAux[comAux] = reg[com2];
+                        vetAux[0][comAux] = reg[0][com2];
                         com2++;
                     }
                     else if (compareC4 == 0) //Se compareC4 for igual a zero, o conteúdo das duas string é igual
                     {
-                        vetAux[comAux] = reg[com1]; //Se o campo 4 também for igual, escolhe por convenção reg[com1], pois tanto faz a ordem
+                        vetAux[0][comAux] = reg[0][com1]; //Se o campo 4 também for igual, escolhe por convenção reg[com1], pois tanto faz a ordem
                         com1++;
                     }
                 }
@@ -525,21 +523,21 @@ for(int i=0;i<fim;i++)
 
     while (com1 <= meio)
     { //Caso ainda haja elementos na primeira metade
-        vetAux[comAux]->campo1 = reg[com1]->campo1;
+        vetAux[0][comAux].campo1 = reg[0][com1].campo1;
         comAux++;
         com1++;
     }
 
     while (com2 <= fim)
     { //Caso ainda haja elementos na segunda metade
-        vetAux[comAux]->campo1 = reg[com2]->campo1;
+        vetAux[0][comAux].campo1 = reg[0][com2].campo1;
         comAux++;
         com2++;
     }
 
     for (comAux = comeco; comAux <= fim; comAux++)
     { //Move os elementos de volta para o vetor original
-        reg[comAux] = vetAux[comAux - comeco];
+        reg[0][comAux] = vetAux[0][comAux - comeco];
     }
 
     free(vetAux);
@@ -547,7 +545,7 @@ for(int i=0;i<fim;i++)
 
 void mergeSort(REGISTRO **reg, int comeco, int fim)
 {
-
+    
     if (comeco < fim)
     {
 
