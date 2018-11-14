@@ -15,5 +15,8 @@ void Gera_Campo2(int n, char *vetor[]);
 void Gera_Campo3(int n, char *vetor[]);
 void Gera_Campo4(int n, char *vetor[]);
 
+void merge(REGISTRO **reg, int comeco, int meio, int fim); //Ordena internamente os registros através de um merge sort
+void mergeSort(REGISTRO **reg, int comeco, int fim);
+
 
 #endif 
