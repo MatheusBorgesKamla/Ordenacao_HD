@@ -8,8 +8,10 @@ typedef struct registros{
     char campo4[11];
 }REGISTRO;
 void GeraDados(int n, REGISTRO *reg);
+
 int GerarArquivo(int n, REGISTRO *reg, char* arq_name);
 int LeArquivo(REGISTRO **reg, char* arq_name, int *n);
+
 void Gera_Campo1(int n, int *vetor);
 void Gera_Campo2(int n, char *vetor[]);
 void Gera_Campo3(int n, char *vetor[]);

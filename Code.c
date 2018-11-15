@@ -126,7 +126,7 @@ void Gera_Campo2(int n, char *vetor[])
 {
     int i, j, k, indice;
     char aux[100][10] = {"GOD", "WAR", "SNIPER", "FIGHT", "BAD", "WEAPON", "FIRE", "ARMY", "ADVANCED", "GHOST", "CHICKEN", "GROW", "HIGH", "MAGIC", "WORLD", "ROCK", "BATTLE", "SNOW", "GAME", "YELLOW", "CALL", "BLACK", "OPS", "HACKER", "SOLDIER", "ZOMBIE", "DRAGONS", "SHIELD", "COLOSSUS", "SHADOW", "DIRTY", "TITANS", "BREAKING", "CRAZY", "NIGHT", "MUTANTS",
-                         "HERO", "SPEED", "RACE", "SUN", "AGE", "EMPIRE", "WAKE", "AMNESIA", "AQUA", "LEGEND", "COUNTER", "KINGS", "DARK", "WATCH", "DOGS", "ORIGINS", "DEFEAT", "DAY", "DIRT", "EURO", "FAR", "CRY", "HONOR", "SIMULATOR", "DESTINY", "GRAND", "HITMAN", "BIOSHOCK", "INSURGENCY", "CAUSE", "LAYERS", "DEAD", "LIFE", "STRANGE", "MAFIA", "MEDAL", "EARTH", "GOAT", "ORCS", "PORTAL", "ROCKET", "SLEEPING", "STAR", "SUPREME", "SURGEON", "TEAM", "FOREST", "WITCHER", "TROPICO", "TIBIA", "RAINBOW", "TALES", "ZELDA", "AUTO", "SIEGE", "ELDER", "SCROLL", "FARM", "HOTEL", "QUAKE", "HALF", "FEAR", "SOULS", "GREAT"};
+                         "HERO", "SPEED", "RACE", "SUN", "AGE", "EMPIRE", "WAKE", "AMNESIA", "AQUA", "LEGEND", "COUNTER", "KINGS", "DARK", "WATCH", "DOGS", "ORIGINS", "DEFEAT", "DAY", "DIRT", "EURO", "FAR", "CRY", "HONOR", "SIMULATOR", "DESTINY", "GRAND", "HITMAN", "BIOSHOCK", "BOARD", "CAUSE", "LAYERS", "DEAD", "LIFE", "STRANGE", "MAFIA", "MEDAL", "EARTH", "GOAT", "ORCS", "PORTAL", "ROCKET", "SLEEPING", "STAR", "SUPREME", "SURGEON", "TEAM", "FOREST", "WITCHER", "TROPICO", "TIBIA", "RAINBOW", "TALES", "ZELDA", "AUTO", "SIEGE", "ELDER", "SCROLL", "FARM", "HOTEL", "QUAKE", "HALF", "FEAR", "SOULS", "GREAT"};
     char strings[9901][30];
     for (i = 0; i < 100; i++)
     {
@@ -351,9 +351,7 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 {
             
    // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
-    /*for(int i=0;i<fim;i++){
-         printf("%d | %s | %s | %s \n",reg[0][i].campo1,reg[0][i].campo2,reg[0][i].campo3,reg[0][i].campo4);
-     }*/
+    
     int com1 = comeco, com2 = meio + 1, comAux = 0, tam = fim - comeco + 1;
     REGISTRO *vetAux = (REGISTRO*)malloc(tam*sizeof(REGISTRO));
 
@@ -515,7 +513,9 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
     for (comAux = comeco; comAux <= fim; comAux++)
     { //Move os elementos de volta para o vetor original
-        reg[0][comAux] = vetAux[comAux - comeco];
+        if(vetAux[comAux - comeco].campo1 != 0)
+            reg[0][comAux] = vetAux[comAux - comeco];
+
     }
 
     free(vetAux);
@@ -523,9 +523,6 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
 void mergeSort(REGISTRO **reg, int comeco, int fim)
 {
-     /*for(int i=0;i<fim;i++){
-         printf("%d %s %s %s \n",reg[0][i].campo1,reg[0][i].campo2,reg[0][i].campo3,reg[0][i].campo4);
-     }*/
         
     if (comeco < fim)
     {
@@ -536,4 +533,5 @@ void mergeSort(REGISTRO **reg, int comeco, int fim)
         mergeSort(reg, meio + 1, fim);
         merge(reg, comeco, meio, fim);
     }
+
 }
