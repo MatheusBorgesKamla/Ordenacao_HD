@@ -35,7 +35,6 @@ void GeraDados(int n, REGISTRO *reg)
 
 int GerarArquivo(int n, REGISTRO *reg, char *arq_name)
 {
-    strcat(arq_name, ".dat");
     FILE *arq = fopen(arq_name, "w+b");
     if (arq == NULL)
     {
@@ -53,7 +52,6 @@ int GerarArquivo(int n, REGISTRO *reg, char *arq_name)
 
 int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
 {
-    strcat(arq_name, ".dat");
     FILE *arq = fopen(arq_name, "r+b");
     if (arq == NULL)
     {
@@ -380,7 +378,7 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
             else 
                 lenAuxC2 = length2C2;
 
-            int compareC2; //Variável que serve para dar um status na comparação das strings
+            int compareC2 = 0; //Variável que serve para dar um status na comparação das strings
             for(int i = 0; i < lenAuxC2; i++) //Faz um for que vai percorrer as strings comparando char por char
             {
                 if(reg[0][com1].campo2[i] < reg[0][com2].campo2[i]) //Se o caractere 1 for menor que o 2, compareC2 recebe um valor negativo
@@ -428,7 +426,10 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                         compareC3 = 1;
                         break;
                     }
-                    
+                    else if(reg[0][com1].campo3[i] == reg[0][com2].campo3[i]){
+                        if(i==(lenAuxC3-1))
+                            compareC3 = 0;
+                    }
                 }
                 if (compareC3 < 0) //Se compareC3 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
                 {
@@ -457,28 +458,21 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                         }
                         else if (reg[0][com1].campo4[i] == reg[0][com2].campo4[i]){
                             if (i == (9)){
-                                if(reg[0][com1].campo4[4] < reg[0][com2].campo4[4]){
+                                if(reg[0][com1].campo4[4] < reg[0][com2].campo4[3] || reg[0][com1].campo4[3] < reg[0][com2].campo4[3] ){
                                     compareC4 = -1;
                                     break;
-                                }else if (reg[0][com1].campo4[4] > reg[0][com2].campo4[4]){
+                                }else if (reg[0][com1].campo4[4] > reg[0][com2].campo4[4] || reg[0][com1].campo4[3] > reg[0][com2].campo4[3] ){
                                     compareC4 = 1;
                                     break;
                                 }else{
-                                    if(reg[0][com1].campo4[0] < reg[0][com2].campo4[0]){
+                                    if(reg[0][com1].campo4[0] < reg[0][com2].campo4[0] || reg[0][com1].campo4[1] < reg[0][com2].campo4[1]){
                                         compareC4 = -1;
                                         break;
-                                    }else if (reg[0][com1].campo4[0] > reg[0][com2].campo4[0]){
+                                    }else if(reg[0][com1].campo4[0] > reg[0][com2].campo4[0] || reg[0][com1].campo4[1] > reg[0][com2].campo4[1]){
                                         compareC4 = 1;
                                         break;
-                                    }else{
-                                        if(reg[0][com1].campo4[1] < reg[0][com2].campo4[1]){
-                                            compareC4 = -1;
-                                            break;
-                                        }else if (reg[0][com1].campo4[1] > reg[0][com2].campo4[1]){
-                                            compareC4 = 1;
-                                            break;
-                                        }
-                                    }
+                                    
+                                    }else{ break; }
                                 }
                             }
                         }
