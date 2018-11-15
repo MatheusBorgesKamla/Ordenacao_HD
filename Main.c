@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
         }else{
             mergeSort(&reg, 0, n);
             for(int i=0;i<n;i++){
-                printf("%d %s %s %s \n",reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
+                printf("%d | %s | %s | %s \n",reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
             }
            
 
