@@ -353,23 +353,21 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 {
             
    // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
-    /*for(int i=0;i<6000;i++)
-        printf("%d %s %s %s \n",reg[0][i].campo1,reg[0][i].campo2,reg[0][i].campo3,reg[0][i].campo4);*/
+
     int com1 = comeco, com2 = meio + 1, comAux = 0, tam = fim - comeco + 1;
-    REGISTRO **vetAux;
-    vetAux = (REGISTRO *)malloc(tam * sizeof(REGISTRO));
+    REGISTRO *vetAux = (REGISTRO*)malloc(tam*sizeof(REGISTRO));
 
     while (com1 <= meio && com2 <= fim)
     {
 
         if (reg[0][com1].campo1 < reg[0][com2].campo1) 
         {
-            vetAux[0][comAux] = reg[0][com1];
+            vetAux[comAux] = reg[0][com1];
             com1++;
         }
         else if(reg[0][com1].campo1 > reg[0][com2].campo1) 
         {
-            vetAux[0][comAux] = reg[0][com2];
+            vetAux[comAux] = reg[0][com2];
             com2++;
         }
         else if(reg[0][com1].campo1 == reg[0][com2].campo1)  //Se o campo1 dos dois registros forem iguais, analisa o campo2
@@ -410,12 +408,12 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
             
             if(compareC2 < 0) //Se compareC2 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
             {
-                vetAux[0][comAux] = reg[0][com1];
+                vetAux[comAux] = reg[0][com1];
                 com1++;
             }
             else if(compareC2 > 0) //compareC2 maior do que zero --> conteúdo da string1 é maior do que string2
             {
-               vetAux[0][comAux] = reg[0][com2];
+               vetAux[comAux] = reg[0][com2];
                com2++; 
             }
             else if (compareC2 == 0) //Se compareC2 for igual a zero, o conteúdo das duas string é igual
@@ -456,12 +454,12 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                 }
                 if (compareC3 < 0) //Se compareC3 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
                 {
-                    vetAux[0][comAux] = reg[0][com1];
+                    vetAux[comAux] = reg[0][com1];
                     com1++;
                 }
                 else if (compareC3 > 0) //compareC3 maior do que zero --> conteúdo da string1 é maior do que string2
                 {
-                    vetAux[0][comAux] = reg[0][com2];
+                    vetAux[comAux] = reg[0][com2];
                     com2++;
                 }
                 else if (compareC3 == 0) //Se compareC3 for igual a zero, o conteúdo das duas string é igual
@@ -501,17 +499,17 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                     }
                     if (compareC4 < 0) //Se compareC4 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
                     {
-                        vetAux[0][comAux] = reg[0][com1];
+                        vetAux[comAux] = reg[0][com1];
                         com1++;
                     }
                     else if (compareC4 > 0) //compareC4 maior do que zero --> conteúdo da string1 é maior do que string2
                     {
-                        vetAux[0][comAux] = reg[0][com2];
+                        vetAux[comAux] = reg[0][com2];
                         com2++;
                     }
                     else if (compareC4 == 0) //Se compareC4 for igual a zero, o conteúdo das duas string é igual
                     {
-                        vetAux[0][comAux] = reg[0][com1]; //Se o campo 4 também for igual, escolhe por convenção reg[com1], pois tanto faz a ordem
+                        vetAux[comAux] = reg[0][com1]; //Se o campo 4 também for igual, escolhe por convenção reg[com1], pois tanto faz a ordem
                         com1++;
                     }
                 }
@@ -523,21 +521,21 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
     while (com1 <= meio)
     { //Caso ainda haja elementos na primeira metade
-        vetAux[0][comAux].campo1 = reg[0][com1].campo1;
+        vetAux[comAux].campo1 = reg[0][com1].campo1;
         comAux++;
         com1++;
     }
 
     while (com2 <= fim)
     { //Caso ainda haja elementos na segunda metade
-        vetAux[0][comAux].campo1 = reg[0][com2].campo1;
+        vetAux[comAux].campo1 = reg[0][com2].campo1;
         comAux++;
         com2++;
     }
 
     for (comAux = comeco; comAux <= fim; comAux++)
     { //Move os elementos de volta para o vetor original
-        reg[0][comAux] = vetAux[0][comAux - comeco];
+        reg[0][comAux] = vetAux[comAux - comeco];
     }
 
     free(vetAux);
@@ -545,7 +543,11 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
 void mergeSort(REGISTRO **reg, int comeco, int fim)
 {
-    
+    REGISTRO reg_aux[fim];
+     /*for(int i=0;i<fim;i++){
+         printf("%d %s %s %s \n",reg[0][i].campo1,reg[0][i].campo2,reg[0][i].campo3,reg[0][i].campo4);
+     }*/
+        
     if (comeco < fim)
     {
 
