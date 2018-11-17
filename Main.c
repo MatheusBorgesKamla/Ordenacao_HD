@@ -33,7 +33,7 @@ int main(int argc, char const *argv[])
     
         }
 
-    }else if(!strcmp(argv[1], "3") && argc == 3){
+    }else if(!strcmp(argv[1], "3") && argc == 4){
         //Funcionalidade 3 :
         REGISTRO *reg;   //Cria um registro
         int n;           //Variável que irá guardar o numero de registros
@@ -47,7 +47,7 @@ int main(int argc, char const *argv[])
         }else{
             mergeSort(&reg, 0, n);
             int cont = 0;
-            if(GerarArquivo(n,reg,argv[2]))
+            if(GerarArquivo(n,reg,argv[3]))
                 printf("Arquivo gerado.");
             else
                 printf("Falha no processamento.");
