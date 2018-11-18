@@ -349,64 +349,63 @@ void Gera_Campo4(int n, char *vetor[])
 
 void merge(REGISTRO **reg, int comeco, int meio, int fim)
 {
-            
-   // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
-    
+
+    // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
+
     int com1 = comeco, com2 = meio + 1, comAux = 0, tam = fim - comeco + 1;
-    REGISTRO *vetAux = (REGISTRO*)malloc(tam*sizeof(REGISTRO));
+    REGISTRO *vetAux = (REGISTRO *)malloc(tam * sizeof(REGISTRO));
 
     while (com1 <= meio && com2 <= fim)
     {
 
-        if (reg[0][com1].campo1 < reg[0][com2].campo1) 
+        if (reg[0][com1].campo1 < reg[0][com2].campo1)
         {
             vetAux[comAux] = reg[0][com1];
             com1++;
         }
-        else if(reg[0][com1].campo1 > reg[0][com2].campo1) 
+        else if (reg[0][com1].campo1 > reg[0][com2].campo1)
         {
             vetAux[comAux] = reg[0][com2];
             com2++;
         }
-        else if(reg[0][com1].campo1 == reg[0][com2].campo1)  //Se o campo1 dos dois registros forem iguais, analisa o campo2
+        else if (reg[0][com1].campo1 == reg[0][com2].campo1) //Se o campo1 dos dois registros forem iguais, analisa o campo2
         {
             int length1C2 = strlen(reg[0][com1].campo2), length2C2 = strlen(reg[0][com2].campo2), lenAuxC2; //Pega o tamanho de cada string
-            if(length1C2 < length2C2) //Aloca no lenAuxC2 o menor tamanho de string
+            if (length1C2 < length2C2)                                                                      //Aloca no lenAuxC2 o menor tamanho de string
                 lenAuxC2 = length1C2;
-            else 
+            else
                 lenAuxC2 = length2C2;
 
-            int compareC2 = 0; //Variável que serve para dar um status na comparação das strings
-            for(int i = 0; i < lenAuxC2; i++) //Faz um for que vai percorrer as strings comparando char por char
+            int compareC2 = 0;                 //Variável que serve para dar um status na comparação das strings
+            for (int i = 0; i < lenAuxC2; i++) //Faz um for que vai percorrer as strings comparando char por char
             {
-                if(reg[0][com1].campo2[i] < reg[0][com2].campo2[i]) //Se o caractere 1 for menor que o 2, compareC2 recebe um valor negativo
+                if (reg[0][com1].campo2[i] < reg[0][com2].campo2[i]) //Se o caractere 1 for menor que o 2, compareC2 recebe um valor negativo
                 {
-                     compareC2 = -1;
-                     break;
+                    compareC2 = -1;
+                    break;
                 }
-                else if(reg[0][com1].campo2[i] > reg[0][com2].campo2[i])  //Se o caractere 1 for maior que o 2, compareC2 recebe um valor positivo
+                else if (reg[0][com1].campo2[i] > reg[0][com2].campo2[i]) //Se o caractere 1 for maior que o 2, compareC2 recebe um valor positivo
                 {
                     compareC2 = 1;
                     break;
                 }
-                
             }
-            
-            if(compareC2 < 0) //Se compareC2 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
+
+            if (compareC2 < 0) //Se compareC2 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
             {
                 vetAux[comAux] = reg[0][com1];
                 com1++;
             }
-            else if(compareC2 > 0) //compareC2 maior do que zero --> conteúdo da string1 é maior do que string2
+            else if (compareC2 > 0) //compareC2 maior do que zero --> conteúdo da string1 é maior do que string2
             {
-               vetAux[comAux] = reg[0][com2];
-               com2++; 
+                vetAux[comAux] = reg[0][com2];
+                com2++;
             }
             else if (compareC2 == 0) //Se compareC2 for igual a zero, o conteúdo das duas string é igual
             {                        //Nesse caso, passa para o próximo campo para fazer a análise
 
                 int length1C3 = strlen(reg[0][com1].campo3), length2C3 = strlen(reg[0][com2].campo3), lenAuxC3; //Pega o tamanho de cada string
-                if (length1C3 < length2C3)                                                                //Aloca no lenAuxC3 o menor tamanho de string
+                if (length1C3 < length2C3)                                                                      //Aloca no lenAuxC3 o menor tamanho de string
                     lenAuxC3 = length1C3;
                 else
                     lenAuxC3 = length2C3;
@@ -424,8 +423,9 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                         compareC3 = 1;
                         break;
                     }
-                    else if(reg[0][com1].campo3[i] == reg[0][com2].campo3[i]){
-                        if(i==(lenAuxC3-1))
+                    else if (reg[0][com1].campo3[i] == reg[0][com2].campo3[i])
+                    {
+                        if (i == (lenAuxC3 - 1))
                             compareC3 = 0;
                     }
                 }
@@ -441,58 +441,55 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                 }
                 else if (compareC3 == 0) //Se compareC3 for igual a zero, o conteúdo das duas string é igual
                 {
-                    int compareC4;                     //Variável que serve para dar um status na comparação das strings
-                    for (int i = 6; i <10 ; i++) //Faz um for que vai percorrer as strings comparando char por char
+                    int compareC4 = 0;           //Variável que serve para dar um status na comparação das strings
+                    for (int i = 6; i < 10; i++) //Faz um for que vai percorrer as strings comparando char por char
                     {
                         if (reg[0][com1].campo4[i] < reg[0][com2].campo4[i]) //Se o caractere 1 for menor que o 2, compareC4 recebe um valor negativo
                         {
                             compareC4 = -1;
                             break;
                         }
-                        else if (reg[0][com1].campo4[i] > reg[0][com2].campo4[i]) //Se o caractere 1 for maior que o 2, compareC4 recebe um valor positivo
+                        if (reg[0][com1].campo4[i] > reg[0][com2].campo4[i]) //Se o caractere 1 for maior que o 2, compareC4 recebe um valor positivo
                         {
                             compareC4 = 1;
                             break;
                         }
-                        else if (reg[0][com1].campo4[i] == reg[0][com2].campo4[i]){
-                            if (i == (9)){
-                                if(reg[0][com1].campo4[4] < reg[0][com2].campo4[3] || reg[0][com1].campo4[3] < reg[0][com2].campo4[3] ){
-                                    compareC4 = -1;
-                                    break;
-                                }else if (reg[0][com1].campo4[4] > reg[0][com2].campo4[4] || reg[0][com1].campo4[3] > reg[0][com2].campo4[3] ){
-                                    compareC4 = 1;
-                                    break;
-                                }else{
-                                    if(reg[0][com1].campo4[0] < reg[0][com2].campo4[0] || reg[0][com1].campo4[1] < reg[0][com2].campo4[1]){
-                                        compareC4 = -1;
-                                        break;
-                                    }else if(reg[0][com1].campo4[0] > reg[0][com2].campo4[0] || reg[0][com1].campo4[1] > reg[0][com2].campo4[1]){
-                                        compareC4 = 1;
-                                        break;
-                                    
-                                    }else{ break; }
-                                }
+                    }
+                    if (compareC4 == 0)
+                    {
+                        if (reg[0][com1].campo4[4] < reg[0][com2].campo4[3] || reg[0][com1].campo4[3] < reg[0][com2].campo4[3])
+                        {
+                            compareC4 = -1;
+                        }
+                        else if (reg[0][com1].campo4[4] > reg[0][com2].campo4[4] || reg[0][com1].campo4[3] > reg[0][com2].campo4[3])
+                        {
+                            compareC4 = 1;
+                        }
+                        else
+                        {
+                            if (reg[0][com1].campo4[0] < reg[0][com2].campo4[0] || reg[0][com1].campo4[1] < reg[0][com2].campo4[1])
+                            {
+                                compareC4 = -1;
+                            }
+                            if (reg[0][com1].campo4[0] > reg[0][com2].campo4[0] || reg[0][com1].campo4[1] > reg[0][com2].campo4[1])
+                            {
+                                compareC4 = 1;
                             }
                         }
                     }
-                    if (compareC4 < 0) //Se compareC4 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
+
+                    if (compareC4 <= 0) //Se compareC4 for menor do que zero, o conteúdo da string 1 é menor que o da string 2
                     {
                         vetAux[comAux] = reg[0][com1];
                         com1++;
                     }
-                    else if (compareC4 > 0) //compareC4 maior do que zero --> conteúdo da string1 é maior do que string2
+                    else //compareC4 maior do que zero --> conteúdo da string1 é maior do que string2
                     {
                         vetAux[comAux] = reg[0][com2];
                         com2++;
                     }
-                    else if (compareC4 == 0) //Se compareC4 for igual a zero, o conteúdo das duas string é igual
-                    {
-                        vetAux[comAux] = reg[0][com1]; //Se o campo 4 também for igual, escolhe por convenção reg[com1], pois tanto faz a ordem
-                        com1++;
-                    }
                 }
             }
-
         }
         comAux++;
     }
@@ -513,9 +510,8 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
     for (comAux = comeco; comAux <= fim; comAux++)
     { //Move os elementos de volta para o vetor original
-        if(vetAux[comAux - comeco].campo1 != 0)
+        if (vetAux[comAux - comeco].campo1 != 0)
             reg[0][comAux] = vetAux[comAux - comeco];
-
     }
 
     free(vetAux);
@@ -523,7 +519,7 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
 void mergeSort(REGISTRO **reg, int comeco, int fim)
 {
-        
+
     if (comeco < fim)
     {
 
@@ -533,5 +529,303 @@ void mergeSort(REGISTRO **reg, int comeco, int fim)
         mergeSort(reg, meio + 1, fim);
         merge(reg, comeco, meio, fim);
     }
+}
 
+int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2, char *arq_fname)
+{
+    FILE *arq1 = fopen(arq_name1, "r+b");
+    FILE *arq2 = fopen(arq_name2, "r+b");
+    FILE *arq_fin = fopen(arq_fname, "w+b");
+
+    if (arq1 == NULL || arq2 == NULL || arq_fin == NULL)
+    {
+        return -1;
+    }
+
+    fseek(arq1, 0, SEEK_END);
+    fseek(arq2, 0, SEEK_END);
+    /* Lê o indicador de posição (em bytes)*/
+    int n1 = ftell(arq1);
+    int n2 = ftell(arq2);
+
+    if (n1 == 0 || n2 == 0)
+    {
+        return 0;
+    }
+
+    n1 = n1 - sizeof(char);
+    n1 = n1 / (sizeof(REGISTRO));
+    n2 = n2 - sizeof(char);
+    n2 = n2 / (sizeof(REGISTRO));
+
+    *reg1 = (REGISTRO **)malloc(n1 * sizeof(REGISTRO));
+    *reg2 = (REGISTRO **)malloc(n2 * sizeof(REGISTRO));
+
+    REGISTRO reg_aux;
+    char status = '0';
+    rewind(arq1);
+    rewind(arq2);
+    fwrite(&status, sizeof(char), 1, arq1);
+    fwrite(&status, sizeof(char), 1, arq2);
+    fwrite(&status, sizeof(char), 1, arq_fin);
+    fseek(arq1, sizeof(char), SEEK_SET);
+    fseek(arq2, sizeof(char), SEEK_SET);
+
+    int cont1 = 0, cont2 = 0, n, teste;
+    fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+    reg1[0][cont1] = reg_aux;
+    fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+    reg2[0][cont2] = reg_aux;
+    while (1)
+    {
+        if (reg1[0][cont1].campo1 < reg2[0][cont2].campo1)
+        {
+            fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+            cont1++;
+            fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+            reg1[0][cont1] = reg_aux;
+        }
+        else if (reg2[0][cont2].campo1 < reg1[0][cont1].campo1)
+        {
+            fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+            cont2++;
+            fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+            reg2[0][cont2] = reg_aux;
+        }
+        else
+        {
+            int a;
+            if (strlen(reg1[0][cont1].campo2) < strlen(reg2[0][cont2].campo2))
+            {
+                n = strlen(reg1[0][cont1].campo2);
+                a = 1;
+            }
+            else if (strlen(reg2[0][cont2].campo2) < strlen(reg1[0][cont1].campo2))
+            {
+                n = strlen(reg2[0][cont2].campo2);
+                a = -1;
+            }
+            else
+            {
+                n = strlen(reg1[0][cont1].campo2);
+                a = 0;
+            }
+            int compare2 = 0;
+            for (int j = 0; j < n; j++)
+            {
+                if (reg1[0][cont1].campo2[j] < reg2[0][cont2].campo2[j])
+                {
+                    compare2 = 1;
+                    break;
+                }
+                else if (reg2[0][cont2].campo2[j] < reg1[0][cont1].campo2[j])
+                {
+                    compare2 = -1;
+                    break;
+                }
+                else if (j == n - 1 && a == 1)
+                {
+                    //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
+                    fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                    cont1++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                    reg1[0][cont1] = reg_aux;
+                    compare2 = 10;
+                }
+                else if (j == n - 1 && a == -1)
+                {
+                    //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
+                    fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                    cont2++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                    reg2[0][cont2] = reg_aux;
+                    compare2 = 10;
+                }
+            }
+            if (compare2 == 1)
+            {
+                //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
+                fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                cont1++;
+                fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                reg1[0][cont1] = reg_aux;
+            }
+            else if (compare2 == -1)
+            {
+                //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
+                fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                cont2++;
+                fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                reg2[0][cont2] = reg_aux;
+            }
+            else if (compare2 == 0 && a == 0)
+            {
+                if (strlen(reg1[0][cont1].campo3) < strlen(reg2[0][cont2].campo3))
+                {
+                    n = strlen(reg1[0][cont1].campo3);
+                    a = 1;
+                }
+                else if (strlen(reg2[0][cont2].campo3) < strlen(reg1[0][cont1].campo3))
+                {
+                    n = strlen(reg2[0][cont2].campo3);
+                    a = -1;
+                }
+                else
+                {
+                    n = strlen(reg1[0][cont1].campo3);
+                    a = 0;
+                }
+                int compare3;
+                for (int j = 0; j < n; j++)
+                {
+                    if (reg1[0][cont1].campo3[j] < reg2[0][cont2].campo3[j])
+                    {
+                        compare3 = 1;
+                        break;
+                    }
+                    else if (reg2[0][cont2].campo3[j] < reg1[0][cont1].campo3[j])
+                    {
+                        compare3 = -1;
+                        break;
+                    }
+                    else if (j == n - 1 && a == 1)
+                    {
+                        //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
+                        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                        cont1++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                        reg1[0][cont1] = reg_aux;
+                        compare3 = 10;
+                    }
+                    else if (j == n - 1 && a == -1)
+                    {
+                        //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
+                        fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                        cont2++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                        reg2[0][cont2] = reg_aux;
+                        compare3 = 10;
+                    }
+                }
+                if (compare3 == 1)
+                {
+                    //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
+                    fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                    cont1++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                    reg1[0][cont1] = reg_aux;
+                }
+                else if (compare3 == -1)
+                {
+                    //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
+                    fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                    cont2++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                    reg2[0][cont2] = reg_aux;
+                }
+                else if (compare3 == 0)
+                {
+                    int compare4;
+                    for (int j = 6; j < 10; j++)
+                    {
+                        if (reg1[0][cont1].campo4[j] < reg2[0][cont2].campo4[j])
+                        {
+                            compare4 = 1;
+                            break;
+                        }
+                        else if (reg2[0][cont2].campo4[j] < reg1[0][cont1].campo4[j])
+                        {
+                            compare4 = -1;
+                            break;
+                        }
+                        else if (reg2[0][cont2].campo4[j] == reg1[0][cont1].campo4[j] && j == 9)
+                        {
+                            compare4 = 0;
+                        }
+                    }
+                    if (compare4 == 0)
+                    {
+                        if (reg1[0][cont1].campo4[4] < reg2[0][cont2].campo4[4] || reg1[0][cont1].campo4[3] < reg2[0][cont2].campo4[3])
+                        {
+                            compare4 = 1;
+                        }
+                        else if (reg2[0][cont2].campo4[4] < reg1[0][cont1].campo4[4] || reg2[0][cont2].campo4[3] < reg1[0][cont1].campo4[3])
+                        {
+                            compare4 = -1;
+                        }
+                        else
+                        {
+                            if (reg1[0][cont1].campo4[0] < reg2[0][cont2].campo4[0] || reg1[0][cont1].campo4[1] < reg2[0][cont2].campo4[1])
+                            {
+                                compare4 = 1;
+                            }
+                            else if (reg2[0][cont2].campo4[0] < reg1[0][cont1].campo4[0] || reg2[0][cont2].campo4[1] < reg1[0][cont1].campo4[1])
+                            {
+                                compare4 = -1;
+                            }
+                        }
+                    }
+                    if (compare4 == 1)
+                    {
+                        //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
+                        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                        cont1++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                        reg1[0][cont1] = reg_aux;
+                    }
+                    else if (compare4 == -1)
+                    {
+                        //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
+                        fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                        cont2++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                        reg2[0][cont2] = reg_aux;
+                    }
+                    else if (compare4 == 0)
+                    {
+                        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                        cont1++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                        reg1[0][cont1] = reg_aux;
+                        cont2++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                        reg2[0][cont2] = reg_aux;
+                    }
+                }
+            }
+        }
+        if (cont1 >= n1 || cont2 >= n2)
+        {
+            break;
+        }
+    }
+    int i;
+    if (cont1 < n1)
+    {
+        for (i = cont1 + 1; i < n1; i++)
+        {
+            fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+            reg1[0][i] = reg_aux;
+            fwrite(&reg1[0][i], sizeof(REGISTRO), 1, arq_fin);
+        }
+    }
+    else if (cont2 < n2)
+    {
+        for (int i = cont2 + 1; i < n2; i++)
+        {
+            fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+            reg2[0][i] = reg_aux;
+            fwrite(&reg2[0][i], sizeof(REGISTRO), 1, arq_fin);
+        }
+    }
+    status = '1';
+    rewind(arq1);
+    rewind(arq2);
+    fwrite(&status, sizeof(char), 1, arq1);
+    fwrite(&status, sizeof(char), 1, arq2);
+    fwrite(&status, sizeof(char), 1, arq_fin);
+    fclose(arq1);
+    fclose(arq2);
+    fclose(arq_fin);
+    return 1;
 }
