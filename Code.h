@@ -22,4 +22,6 @@ void mergeSort(REGISTRO **reg, int comeco, int fim);
 
 int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2, char *arq_fname);
 
+int matching(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2, char *arq_fname);
+
 #endif 

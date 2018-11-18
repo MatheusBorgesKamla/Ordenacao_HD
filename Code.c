@@ -533,6 +533,7 @@ void mergeSort(REGISTRO **reg, int comeco, int fim)
 
 int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2, char *arq_fname)
 {
+    //Abrindo os arquivos
     FILE *arq1 = fopen(arq_name1, "r+b");
     FILE *arq2 = fopen(arq_name2, "r+b");
     FILE *arq_fin = fopen(arq_fname, "w+b");
@@ -541,7 +542,7 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
     {
         return -1;
     }
-
+    //Pulando para o fim de cada arquivo
     fseek(arq1, 0, SEEK_END);
     fseek(arq2, 0, SEEK_END);
     /* Lê o indicador de posição (em bytes)*/
@@ -552,7 +553,7 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
     {
         return 0;
     }
-
+    //Calculando a quantidade de elementos de cada arquivo
     n1 = n1 - sizeof(char);
     n1 = n1 / (sizeof(REGISTRO));
     n2 = n2 - sizeof(char);
@@ -560,8 +561,8 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
 
     *reg1 = (REGISTRO **)malloc(n1 * sizeof(REGISTRO));
     *reg2 = (REGISTRO **)malloc(n2 * sizeof(REGISTRO));
-
     REGISTRO reg_aux;
+    //Escrevendo o status nos arquivos abertos
     char status = '0';
     rewind(arq1);
     rewind(arq2);
@@ -571,6 +572,7 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
     fseek(arq1, sizeof(char), SEEK_SET);
     fseek(arq2, sizeof(char), SEEK_SET);
 
+    //Començando a ler os arquivos e declarando variaveis auxiliáres
     int cont1 = 0, cont2 = 0, n, teste;
     fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
     reg1[0][cont1] = reg_aux;
@@ -578,7 +580,8 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
     reg2[0][cont2] = reg_aux;
     while (1)
     {
-        if (reg1[0][cont1].campo1 < reg2[0][cont2].campo1)
+        //Compara o campo1 dos elementos de cada arquivo, encontra o menor deles e escrevo no arq //final e lê mais um registro do arquivo do menor elemento 
+        if (reg1[0][cont1].campo1 < reg2[0][cont2].campo1) 
         {
             fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
             cont1++;
@@ -592,8 +595,10 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
             fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
             reg2[0][cont2] = reg_aux;
         }
+        //Se os elementos tiveram o campo1 iguais parto para comparação do campo2
         else
         {
+            //Calculo qual possui o menor campo2 ou se são iguais em quantidade
             int a;
             if (strlen(reg1[0][cont1].campo2) < strlen(reg2[0][cont2].campo2))
             {
@@ -611,6 +616,9 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                 a = 0;
             }
             int compare2 = 0;
+            //Comparo o campo2 char por char até achar o menor ou o caso se tiverem somente
+            //uma parte do campo2 igual eu testo qual tem a menor string e esse eu considero 
+            //como menor
             for (int j = 0; j < n; j++)
             {
                 if (reg1[0][cont1].campo2[j] < reg2[0][cont2].campo2[j])
@@ -625,7 +633,6 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                 }
                 else if (j == n - 1 && a == 1)
                 {
-                    //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
                     fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
                     cont1++;
                     fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
@@ -634,7 +641,6 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                 }
                 else if (j == n - 1 && a == -1)
                 {
-                    //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
                     fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
                     cont2++;
                     fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
@@ -642,9 +648,10 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     compare2 = 10;
                 }
             }
+            //A variável auxiliar compare2 guarda 1 caso o registro do arq1 for menor e -1 caso
+            //o registro do arq2 seja menor e 0 caso sejam iguais
             if (compare2 == 1)
             {
-                //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
                 fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
                 cont1++;
                 fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
@@ -652,14 +659,15 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
             }
             else if (compare2 == -1)
             {
-                //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
                 fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
                 cont2++;
                 fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
                 reg2[0][cont2] = reg_aux;
             }
+            //Se o campo2 forem iguais parto para o campo 3
             else if (compare2 == 0 && a == 0)
             {
+                //Calculo qual possui o menor campo3 ou se são iguais em quantidade
                 if (strlen(reg1[0][cont1].campo3) < strlen(reg2[0][cont2].campo3))
                 {
                     n = strlen(reg1[0][cont1].campo3);
@@ -675,6 +683,9 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     n = strlen(reg1[0][cont1].campo3);
                     a = 0;
                 }
+                //Comparo o campo3 char por char até achar o menor ou o caso se tiverem somente
+                //uma parte do campo3 igual eu testo qual tem a menor string e esse eu considero 
+                //como menor
                 int compare3;
                 for (int j = 0; j < n; j++)
                 {
@@ -690,7 +701,6 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     }
                     else if (j == n - 1 && a == 1)
                     {
-                        //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
                         fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
                         cont1++;
                         fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
@@ -699,7 +709,6 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     }
                     else if (j == n - 1 && a == -1)
                     {
-                        //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
                         fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
                         cont2++;
                         fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
@@ -707,9 +716,10 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                         compare3 = 10;
                     }
                 }
+                //A variável auxiliar compare3 guarda 1 caso o registro do arq1 for menor e -1 caso
+                //o registro do arq2 seja menor e 0 caso sejam iguais
                 if (compare3 == 1)
                 {
-                    //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
                     fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
                     cont1++;
                     fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
@@ -717,14 +727,16 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                 }
                 else if (compare3 == -1)
                 {
-                    //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
                     fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
                     cont2++;
                     fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
                     reg2[0][cont2] = reg_aux;
                 }
+                //Se o campo3 forem iguais parto para o campo 4
                 else if (compare3 == 0)
                 {
+                    //Primeiramente comparo os caracteres correspondentes ao ano de cada
+                    //registro
                     int compare4;
                     for (int j = 6; j < 10; j++)
                     {
@@ -743,6 +755,7 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                             compare4 = 0;
                         }
                     }
+                    //Se possuirem anos iguais parto para os caracteres do mês
                     if (compare4 == 0)
                     {
                         if (reg1[0][cont1].campo4[4] < reg2[0][cont2].campo4[4] || reg1[0][cont1].campo4[3] < reg2[0][cont2].campo4[3])
@@ -755,6 +768,7 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                         }
                         else
                         {
+                            //Se possuirem mês igual eu comparo os dias até achar o menor deles
                             if (reg1[0][cont1].campo4[0] < reg2[0][cont2].campo4[0] || reg1[0][cont1].campo4[1] < reg2[0][cont2].campo4[1])
                             {
                                 compare4 = 1;
@@ -765,9 +779,9 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                             }
                         }
                     }
+                    //A variável auxiliar compare4 guarda 1 caso o registro do arq1 for menor e -1 //caso o registro do arq2 seja menor e 0 caso sejam iguais
                     if (compare4 == 1)
                     {
-                        //printf("%d %s -> %d %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg2[0][cont2].campo1,reg2[0][cont2].campo2);
                         fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
                         cont1++;
                         fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
@@ -775,14 +789,14 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     }
                     else if (compare4 == -1)
                     {
-                        //printf("%d %s -> %d %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg1[0][cont1].campo1,reg1[0][cont1].campo2);
                         fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
                         cont2++;
                         fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
                         reg2[0][cont2] = reg_aux;
                     }
                     else if (compare4 == 0)
-                    {
+                    { // Se o campo 4 for igual quer dizer que os registros são 
+                    // são completamente iguais, então escolho o registro do arq 1 e escrvo ele no //arq final e ai leio dum registro de cada arquivo 
                         fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
                         cont1++;
                         fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
@@ -794,15 +808,16 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                 }
             }
         }
+        //Continuo o loop até ter lido o número total de registros de um dos arquivos
+        //indicando o seu final
         if (cont1 >= n1 || cont2 >= n2)
         {
             break;
         }
     }
-    printf("Cont1 = %d Cont2 = %d \n",cont1,cont2);
-    printf("%d %s %s %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg1[0][cont1].campo3,reg1[0][cont1].campo4);
-    printf("%d %s %s %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg2[0][cont2].campo3,reg2[0][cont2].campo4);
     int i;
+    //Agora testo qual dos arquivos já cheguei no final, o que não cheguei continuo lendo e
+    //escrevendo no arq final até chegar em seu fim
     while(cont1 < n1){
         fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
         cont1++;
@@ -821,9 +836,11 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
         }
         
     }
+    //Retorno o status de cada arquivo para 1 para agora poder fecha-los
     status = '1';
     rewind(arq1);
     rewind(arq2);
+    rewind(arq_fin);
     fwrite(&status, sizeof(char), 1, arq1);
     fwrite(&status, sizeof(char), 1, arq2);
     fwrite(&status, sizeof(char), 1, arq_fin);
@@ -831,4 +848,305 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
     fclose(arq2);
     fclose(arq_fin);
     return 1;
+}
+
+int matching(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2, char *arq_fname)
+{
+    //Abrindo os arquivos
+    FILE *arq1 = fopen(arq_name1, "r+b");
+    FILE *arq2 = fopen(arq_name2, "r+b");
+    FILE *arq_fin = fopen(arq_fname, "w+b");
+
+    if (arq1 == NULL || arq2 == NULL || arq_fin == NULL)
+    {
+        return -1;
+    }
+    //Pulando para o fim de cada arquivo
+    fseek(arq1, 0, SEEK_END);
+    fseek(arq2, 0, SEEK_END);
+    /* Lê o indicador de posição (em bytes)*/
+    int n1 = ftell(arq1);
+    int n2 = ftell(arq2);
+
+    if (n1 == 0 || n2 == 0)
+    {
+        return 0;
+    }
+    //Calculando a quantidade de elementos de cada arquivo
+    n1 = n1 - sizeof(char);
+    n1 = n1 / (sizeof(REGISTRO));
+    n2 = n2 - sizeof(char);
+    n2 = n2 / (sizeof(REGISTRO));
+
+    *reg1 = (REGISTRO **)malloc(n1 * sizeof(REGISTRO));
+    *reg2 = (REGISTRO **)malloc(n2 * sizeof(REGISTRO));
+    REGISTRO reg_aux;
+    //Escrevendo o status nos arquivos abertos
+    char status = '0';
+    rewind(arq1);
+    rewind(arq2);
+    fwrite(&status, sizeof(char), 1, arq1);
+    fwrite(&status, sizeof(char), 1, arq2);
+    fwrite(&status, sizeof(char), 1, arq_fin);
+    fseek(arq1, sizeof(char), SEEK_SET);
+    fseek(arq2, sizeof(char), SEEK_SET);
+
+    //Començando a ler os arquivos e declarando variaveis auxiliáres
+    int cont1 = 0, cont2 = 0, n, teste;
+    fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+    reg1[0][cont1] = reg_aux;
+    fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+    reg2[0][cont2] = reg_aux;
+    while (1)
+    {
+        //Compara o campo1 dos elementos de cada arquivo, encontra o menor deles e escrevo no arq //final e lê mais um registro do arquivo do menor elemento 
+        if (reg1[0][cont1].campo1 < reg2[0][cont2].campo1) 
+        {
+            fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+            cont1++;
+            fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+            reg1[0][cont1] = reg_aux;
+        }
+        else if (reg2[0][cont2].campo1 < reg1[0][cont1].campo1)
+        {
+            fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+            cont2++;
+            fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+            reg2[0][cont2] = reg_aux;
+        }
+        //Se os elementos tiveram o campo1 iguais parto para comparação do campo2
+        else
+        {
+            //Calculo qual possui o menor campo2 ou se são iguais em quantidade
+            int a;
+            if (strlen(reg1[0][cont1].campo2) < strlen(reg2[0][cont2].campo2))
+            {
+                n = strlen(reg1[0][cont1].campo2);
+                a = 1;
+            }
+            else if (strlen(reg2[0][cont2].campo2) < strlen(reg1[0][cont1].campo2))
+            {
+                n = strlen(reg2[0][cont2].campo2);
+                a = -1;
+            }
+            else
+            {
+                n = strlen(reg1[0][cont1].campo2);
+                a = 0;
+            }
+            int compare2 = 0;
+            //Comparo o campo2 char por char até achar o menor ou o caso se tiverem somente
+            //uma parte do campo2 igual eu testo qual tem a menor string e esse eu considero 
+            //como menor
+            for (int j = 0; j < n; j++)
+            {
+                if (reg1[0][cont1].campo2[j] < reg2[0][cont2].campo2[j])
+                {
+                    compare2 = 1;
+                    break;
+                }
+                else if (reg2[0][cont2].campo2[j] < reg1[0][cont1].campo2[j])
+                {
+                    compare2 = -1;
+                    break;
+                }
+                else if (j == n - 1 && a == 1)
+                {
+                    fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                    cont1++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                    reg1[0][cont1] = reg_aux;
+                    compare2 = 10;
+                }
+                else if (j == n - 1 && a == -1)
+                {
+                    fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                    cont2++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                    reg2[0][cont2] = reg_aux;
+                    compare2 = 10;
+                }
+            }
+            //A variável auxiliar compare2 guarda 1 caso o registro do arq1 for menor e -1 caso
+            //o registro do arq2 seja menor e 0 caso sejam iguais
+            if (compare2 == 1)
+            {
+                fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                cont1++;
+                fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                reg1[0][cont1] = reg_aux;
+            }
+            else if (compare2 == -1)
+            {
+                fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                cont2++;
+                fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                reg2[0][cont2] = reg_aux;
+            }
+            //Se o campo2 forem iguais parto para o campo 3
+            else if (compare2 == 0 && a == 0)
+            {
+                //Calculo qual possui o menor campo3 ou se são iguais em quantidade
+                if (strlen(reg1[0][cont1].campo3) < strlen(reg2[0][cont2].campo3))
+                {
+                    n = strlen(reg1[0][cont1].campo3);
+                    a = 1;
+                }
+                else if (strlen(reg2[0][cont2].campo3) < strlen(reg1[0][cont1].campo3))
+                {
+                    n = strlen(reg2[0][cont2].campo3);
+                    a = -1;
+                }
+                else
+                {
+                    n = strlen(reg1[0][cont1].campo3);
+                    a = 0;
+                }
+                //Comparo o campo3 char por char até achar o menor ou o caso se tiverem somente
+                //uma parte do campo3 igual eu testo qual tem a menor string e esse eu considero 
+                //como menor
+                int compare3;
+                for (int j = 0; j < n; j++)
+                {
+                    if (reg1[0][cont1].campo3[j] < reg2[0][cont2].campo3[j])
+                    {
+                        compare3 = 1;
+                        break;
+                    }
+                    else if (reg2[0][cont2].campo3[j] < reg1[0][cont1].campo3[j])
+                    {
+                        compare3 = -1;
+                        break;
+                    }
+                    else if (j == n - 1 && a == 1)
+                    {
+                        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                        cont1++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                        reg1[0][cont1] = reg_aux;
+                        compare3 = 10;
+                    }
+                    else if (j == n - 1 && a == -1)
+                    {
+                        fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                        cont2++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                        reg2[0][cont2] = reg_aux;
+                        compare3 = 10;
+                    }
+                }
+                //A variável auxiliar compare3 guarda 1 caso o registro do arq1 for menor e -1 caso
+                //o registro do arq2 seja menor e 0 caso sejam iguais
+                if (compare3 == 1)
+                {
+                    fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                    cont1++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                    reg1[0][cont1] = reg_aux;
+                }
+                else if (compare3 == -1)
+                {
+                    fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                    cont2++;
+                    fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                    reg2[0][cont2] = reg_aux;
+                }
+                //Se o campo3 forem iguais parto para o campo 4
+                else if (compare3 == 0)
+                {
+                    //Primeiramente comparo os caracteres correspondentes ao ano de cada
+                    //registro
+                    int compare4;
+                    for (int j = 6; j < 10; j++)
+                    {
+                        if (reg1[0][cont1].campo4[j] < reg2[0][cont2].campo4[j])
+                        {
+                            compare4 = 1;
+                            break;
+                        }
+                        else if (reg2[0][cont2].campo4[j] < reg1[0][cont1].campo4[j])
+                        {
+                            compare4 = -1;
+                            break;
+                        }
+                        else if (reg2[0][cont2].campo4[j] == reg1[0][cont1].campo4[j] && j == 9)
+                        {
+                            compare4 = 0;
+                        }
+                    }
+                    //Se possuirem anos iguais parto para os caracteres do mês
+                    if (compare4 == 0)
+                    {
+                        if (reg1[0][cont1].campo4[4] < reg2[0][cont2].campo4[4] || reg1[0][cont1].campo4[3] < reg2[0][cont2].campo4[3])
+                        {
+                            compare4 = 1;
+                        }
+                        else if (reg2[0][cont2].campo4[4] < reg1[0][cont1].campo4[4] || reg2[0][cont2].campo4[3] < reg1[0][cont1].campo4[3])
+                        {
+                            compare4 = -1;
+                        }
+                        else
+                        {
+                            //Se possuirem mês igual eu comparo os dias até achar o menor deles
+                            if (reg1[0][cont1].campo4[0] < reg2[0][cont2].campo4[0] || reg1[0][cont1].campo4[1] < reg2[0][cont2].campo4[1])
+                            {
+                                compare4 = 1;
+                            }
+                            else if (reg2[0][cont2].campo4[0] < reg1[0][cont1].campo4[0] || reg2[0][cont2].campo4[1] < reg1[0][cont1].campo4[1])
+                            {
+                                compare4 = -1;
+                            }
+                        }
+                    }
+                    //A variável auxiliar compare4 guarda 1 caso o registro do arq1 for menor e -1 //caso o registro do arq2 seja menor e 0 caso sejam iguais
+                    if (compare4 == 1)
+                    {
+                        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                        cont1++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                        reg1[0][cont1] = reg_aux;
+                    }
+                    else if (compare4 == -1)
+                    {
+                        fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+                        cont2++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                        reg2[0][cont2] = reg_aux;
+                    }
+                    else if (compare4 == 0)
+                    { // Se o campo 4 for igual quer dizer que os registros são 
+                    // são completamente iguais, então escolho o registro do arq 1 e escrvo ele no //arq final e ai leio dum registro de cada arquivo 
+                        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+                        cont1++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
+                        reg1[0][cont1] = reg_aux;
+                        cont2++;
+                        fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
+                        reg2[0][cont2] = reg_aux;
+                    }
+                }
+            }
+        }
+        //Continuo o loop até ter lido o número total de registros de um dos arquivos
+        //indicando o seu final, ou seja, quando uma das listas acabarem o processo se
+        //encerra
+        if (cont1 >= n1 || cont2 >= n2)
+        {
+            break;
+        }
+    }
+    int i;
+    //Retorno o status de cada arquivo para 1 para agora poder fecha-los
+    status = '1';
+    rewind(arq1);
+    rewind(arq2);
+    rewind(arq_fin);
+    fwrite(&status, sizeof(char), 1, arq1);
+    fwrite(&status, sizeof(char), 1, arq2);
+    fwrite(&status, sizeof(char), 1, arq_fin);
+    fclose(arq1);
+    fclose(arq2);
+    fclose(arq_fin);
+    return 1;
+
 }
