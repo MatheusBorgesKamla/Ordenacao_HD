@@ -799,24 +799,27 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
             break;
         }
     }
+    printf("Cont1 = %d Cont2 = %d \n",cont1,cont2);
+    printf("%d %s %s %s \n",reg1[0][cont1].campo1,reg1[0][cont1].campo2,reg1[0][cont1].campo3,reg1[0][cont1].campo4);
+    printf("%d %s %s %s \n",reg2[0][cont2].campo1,reg2[0][cont2].campo2,reg2[0][cont2].campo3,reg2[0][cont2].campo4);
     int i;
-    if (cont1 < n1)
-    {
-        for (i = cont1 + 1; i < n1; i++)
-        {
+    while(cont1 < n1){
+        fwrite(&reg1[0][cont1], sizeof(REGISTRO), 1, arq_fin);
+        cont1++;
+        if(cont1 != n1){
             fread(&reg_aux, sizeof(REGISTRO), 1, arq1);
-            reg1[0][i] = reg_aux;
-            fwrite(&reg1[0][i], sizeof(REGISTRO), 1, arq_fin);
+            reg1[0][cont1] = reg_aux;
         }
     }
-    else if (cont2 < n2)
+    while(cont2 < n2)
     {
-        for (int i = cont2 + 1; i < n2; i++)
-        {
+        fwrite(&reg2[0][cont2], sizeof(REGISTRO), 1, arq_fin);
+        cont2++;
+        if(cont2 != n1){
             fread(&reg_aux, sizeof(REGISTRO), 1, arq2);
-            reg2[0][i] = reg_aux;
-            fwrite(&reg2[0][i], sizeof(REGISTRO), 1, arq_fin);
+            reg1[0][cont2] = reg_aux;
         }
+        
     }
     status = '1';
     rewind(arq1);
