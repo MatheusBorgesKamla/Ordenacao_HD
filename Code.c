@@ -455,26 +455,37 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
                             break;
                         }
                     }
+                    int c = 0;
                     if (compareC4 == 0)
                     {
-                        if (reg[0][com1].campo4[4] < reg[0][com2].campo4[3] || reg[0][com1].campo4[3] < reg[0][com2].campo4[3])
+                        for(int i=3;i<=4;i++)
                         {
-                            compareC4 = -1;
-                        }
-                        else if (reg[0][com1].campo4[4] > reg[0][com2].campo4[4] || reg[0][com1].campo4[3] > reg[0][com2].campo4[3])
-                        {
-                            compareC4 = 1;
-                        }
-                        else
-                        {
-                            if (reg[0][com1].campo4[0] < reg[0][com2].campo4[0] || reg[0][com1].campo4[1] < reg[0][com2].campo4[1])
+                            if (reg[0][com1].campo4[i] < reg[0][com2].campo4[i]) 
                             {
                                 compareC4 = -1;
+                                break;
                             }
-                            if (reg[0][com1].campo4[0] > reg[0][com2].campo4[0] || reg[0][com1].campo4[1] > reg[0][com2].campo4[1])
+                            else if (reg[0][com1].campo4[i] > reg[0][com2].campo4[i]) 
                             {
                                 compareC4 = 1;
+                                break;
                             }
+                        }
+                        if(compareC4 == 0)
+                        {
+                            for(int i=0;i<=1;i++)
+                            {
+                                if (reg[0][com1].campo4[i] < reg[0][com2].campo4[i]) 
+                                {
+                                    compareC4 = -1;
+                                    break;
+                                }
+                                else if (reg[0][com1].campo4[i] > reg[0][com2].campo4[i]) 
+                                {
+                                    compareC4 = 1;
+                                    break;
+                                }
+                        }
                         }
                     }
 
@@ -758,24 +769,34 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     //Se possuirem anos iguais parto para os caracteres do mês
                     if (compare4 == 0)
                     {
-                        if (reg1[0][cont1].campo4[4] < reg2[0][cont2].campo4[4] || reg1[0][cont1].campo4[3] < reg2[0][cont2].campo4[3])
+                        for(int i=3;i<=4;i++)
                         {
-                            compare4 = 1;
-                        }
-                        else if (reg2[0][cont2].campo4[4] < reg1[0][cont1].campo4[4] || reg2[0][cont2].campo4[3] < reg1[0][cont1].campo4[3])
-                        {
-                            compare4 = -1;
-                        }
-                        else
-                        {
-                            //Se possuirem mês igual eu comparo os dias até achar o menor deles
-                            if (reg1[0][cont1].campo4[0] < reg2[0][cont2].campo4[0] || reg1[0][cont1].campo4[1] < reg2[0][cont2].campo4[1])
+                            if (reg1[0][cont1].campo4[i] < reg2[0][cont2].campo4[i]) 
                             {
                                 compare4 = 1;
+                                break;
                             }
-                            else if (reg2[0][cont2].campo4[0] < reg1[0][cont1].campo4[0] || reg2[0][cont2].campo4[1] < reg1[0][cont1].campo4[1])
+                            else if (reg1[0][cont1].campo4[i] > reg2[0][cont2].campo4[i]) 
                             {
                                 compare4 = -1;
+                                break;
+                            }
+                        }
+                        if(compare4 == 0)
+                        {
+                            //Se possuirem mês igual eu comparo os dias até achar o menor deles
+                            for(int i=0;i<=1;i++)
+                            {
+                                if (reg1[0][cont1].campo4[i] < reg2[0][cont2].campo4[i]) 
+                                {
+                                    compare4 = 1;
+                                    break;
+                                }
+                                else if (reg1[0][cont1].campo4[i] > reg2[0][cont2].campo4[i]) 
+                                {
+                                    compare4 = -1;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1079,24 +1100,34 @@ int matching(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
                     //Se possuirem anos iguais parto para os caracteres do mês
                     if (compare4 == 0)
                     {
-                        if (reg1[0][cont1].campo4[4] < reg2[0][cont2].campo4[4] || reg1[0][cont1].campo4[3] < reg2[0][cont2].campo4[3])
+                         for(int i=3;i<=4;i++)
                         {
-                            compare4 = 1;
-                        }
-                        else if (reg2[0][cont2].campo4[4] < reg1[0][cont1].campo4[4] || reg2[0][cont2].campo4[3] < reg1[0][cont1].campo4[3])
-                        {
-                            compare4 = -1;
-                        }
-                        else
-                        {
-                            //Se possuirem mês igual eu comparo os dias até achar o menor deles
-                            if (reg1[0][cont1].campo4[0] < reg2[0][cont2].campo4[0] || reg1[0][cont1].campo4[1] < reg2[0][cont2].campo4[1])
+                            if (reg1[0][cont1].campo4[i] < reg2[0][cont2].campo4[i]) 
                             {
                                 compare4 = 1;
+                                break;
                             }
-                            else if (reg2[0][cont2].campo4[0] < reg1[0][cont1].campo4[0] || reg2[0][cont2].campo4[1] < reg1[0][cont1].campo4[1])
+                            else if (reg1[0][cont1].campo4[i] > reg2[0][cont2].campo4[i]) 
                             {
                                 compare4 = -1;
+                                break;
+                            }
+                        }
+                        if(compare4 == 0)
+                        {
+                            //Se possuirem mês igual eu comparo os dias até achar o menor deles
+                            for(int i=0;i<=1;i++)
+                            {
+                                if (reg1[0][cont1].campo4[i] < reg2[0][cont2].campo4[i]) 
+                                {
+                                    compare4 = 1;
+                                    break;
+                                }
+                                else if (reg1[0][cont1].campo4[i] > reg2[0][cont2].campo4[i]) 
+                                {
+                                    compare4 = -1;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -1255,24 +1286,30 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
                 }
                 if (compare4 == 0)
                 {
-                    if (reg1.campo4[4] < reg2.campo4[4] || reg1.campo4[3] < reg2.campo4[3])
+                    for(int i=3;i<=4;i++)
                     {
-                        return 1;
-                    }
-                    else if (reg2.campo4[4] < reg1.campo4[4] || reg2.campo4[3] < reg1.campo4[3])
-                    {
-                        return -1;
-                    }
-                    else
-                    {
-                        //Se possuirem mês igual eu comparo os dias até achar o menor deles
-                        if (reg1.campo4[0] < reg2.campo4[0] || reg1.campo4[1] < reg2.campo4[1])
+                        if (reg1.campo4[i] < reg2.campo4[i]) 
                         {
                             return 1;
                         }
-                        else if (reg2.campo4[0] < reg1.campo4[0] || reg2.campo4[1] < reg1.campo4[1])
+                        else if (reg1.campo4[i] > reg2.campo4[i]) 
                         {
-                            return -1;
+                                return -1;
+                        }
+                    }
+                    if(compare4 == 0)
+                    {
+                        //Se possuirem mês igual eu comparo os dias até achar o menor deles
+                        for(int i=0;i<=1;i++)
+                        {
+                            if (reg1.campo4[i] < reg2.campo4[i]) 
+                            {
+                                return 1;
+                            }
+                            else if (reg1.campo4[i] > reg2.campo4[i]) 
+                            {
+                                    return -1;
+                            }
                         }
                     }
                 }
