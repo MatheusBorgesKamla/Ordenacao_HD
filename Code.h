@@ -6,6 +6,7 @@ typedef struct registros{
     char campo2[30];
     char campo3[20];
     char campo4[11];
+    int indice; //Variável que será de utilidade na funcionalidade6
 }REGISTRO;
 void GeraDados(int n, REGISTRO *reg);
 
@@ -24,4 +25,6 @@ int mergeArq(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
 
 int matching(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2, char *arq_fname);
 
+void multiway_merging(char **arquivo, char *arq_fname, int argc);
+REGISTRO retorna_menor(int quantReg, REGISTRO **reg, int *cont);
 #endif 

@@ -108,9 +108,21 @@ int main(int argc, char const *argv[])
         free(reg1);
         free(reg2);
     }
+    else if(!strcmp(argv[1], "6") && argc >= 5)
+    {
+        char **arquivo = (char **) malloc((argc-3)*sizeof(char*));
+        int j = 0;
+        for(int i = 2; i < argc-1; i++)
+        {
+            arquivo[j] = argv[i];
+            j++;
+        } 
+        multiway_merging(arquivo, argv[argc-1], argc); 
+        
+    }
     else
     {
         printf("Erro passagem de parametros");
     }
     return 0;
-}
+} 

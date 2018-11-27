@@ -1183,7 +1183,7 @@ int matching(REGISTRO **reg1, REGISTRO **reg2, char *arq_name1, char *arq_name2,
     return 1;
 }
 
-int compara_reg(REGISTRO reg1, REGISTRO reg2)
+int compara_reg(REGISTRO reg1, REGISTRO reg2) //Função que compara dois registros, dizendo qual é menor
 {
     if (reg1.campo1 < reg2.campo1)
     {
@@ -1311,9 +1311,95 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
                                     return -1;
                             }
                         }
+                        return 0;
                     }
                 }
             }
         }
+    }
+}
+
+void multiway_merging(char **arquivo, char *arq_fname, int argc)
+{
+    //Abrindo os arquivos
+    FILE **arq;
+
+    int n[argc-3]; //n será a quantidade de registros em um arquivo
+    
+    REGISTRO **reg = (REGISTRO **) malloc((argc-3) * sizeof(REGISTRO*)); //Criando  os registros para fazer análises 
+    for(int i = 0; i < (argc-3); i++)
+    {
+        arq[i] = fopen(arquivo[i], "r+b");
+        if(arq[i] == NULL)
+            return -1;
+        fseek(arq[i], 0, SEEK_END); //Pulando para o fim de cada arquivo
+        n[i] = ftell(arq[i]); //Lê o indicador de posição em bytes
+        if(n[i] == 0)
+            return 0;
+        //Calculando a quantidade de elementos de cada arquivo
+        n[i] = n[i] - sizeof(char);
+        n[i] = n[i] / (sizeof(REGISTRO)); 
+        //Alocando memória para os registros
+        for(int j = 0; j < (argc-3); j++)
+        {
+            reg[j] = (REGISTRO *) malloc(n[i] * sizeof(REGISTRO));
+        }
+        //Escrevendo o status nos arquivos abertos
+        rewind(arq[i]);
+        char status = '0';
+        fwrite(&status, sizeof(char), 1, arq[i]);
+        fseek(arq[i], sizeof(char), SEEK_SET);
+    }
+    FILE *arq_fin = fopen(arq_fname, "w+b");
+    if(arq_fin == NULL)
+        return -1;
+
+    REGISTRO reg_aux; //Cria um registro auxiliar
+    
+    //Començando a ler os arquivos e declarando variaveis auxiliáres
+    int *cont = (int*) malloc((argc-3) * sizeof(int));
+    for(int i = 0; i < (argc-3); i++)
+    {
+        cont[i] = 0;
+        fread(&reg_aux, sizeof(REGISTRO), 1, arq[i]);
+        reg[i][cont[i]] = reg_aux;
+    }
+
+    reg_aux = retorna_menor(argc-3, reg, cont); //Função que retorna o menor registro entre os arquivos
+    fwrite(&reg_aux, sizeof(REGISTRO), 1, arq_fin); //Escreve esse registro no arquivo final
+    int indice = reg_aux.indice;
+    cont[indice] = (cont[indice] + 1);
+    fread(&reg_aux, sizeof(REGISTRO), 1, arq[indice]); //Passa para o próximo registro desse arquivo
+    reg[indice][cont[indice]] = reg_aux;
+}
+
+REGISTRO retorna_menor(int quantReg, REGISTRO **reg, int *cont)
+{
+    int *no, j = 0;
+    if(quantReg % 2 == 0) //Se a quantidade de registros a serem analisados for par
+    {
+        no = (int *) malloc((quantReg/2) * sizeof(int)); //Recebe 1, -1 ou 0 para indicar qual registro é menor
+        REGISTRO **regAux = (REGISTRO **) malloc((quantReg/2) * sizeof(REGISTRO*));  //Criando um registro auxiliar e alocando memória para ele
+        
+        for(int i = 0; i < quantReg; i = i+2)
+        {
+            no[j] = compara_reg(reg[i][cont[i]], reg[i+1][cont[i]]);
+            if(no[j] >= 0)
+            {
+                regAux[0][j] = reg[i][cont[i]];
+                regAux[0][j].indice = i;
+            }
+            else if(no[j] < 0)
+            {
+                regAux[0][j] = reg[i+1][cont[i]];
+                regAux[0][j].indice = i+1;
+            }
+            j++;
+        }
+        if(j == 0) //Condição de parada da recursão. Para quando só há um registro restante
+        {
+            return regAux[0][j];
+        }
+        retorna_menor(quantReg/2, regAux, cont); //Caso contrário, chama mais uma vez a função para os novos registros
     }
 }
