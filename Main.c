@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
         else
         {
             for (int i = 0; i < n; i++)
-                printf("%d %s %s %s \n", reg[i].campo1, reg[i].campo2, reg[i].campo3, reg[i].campo4);
+                printf("%d : %d %s %s %s \n",i+1,reg[i].campo1, reg[i].campo2, reg[i].campo3, reg[i].campo4);
         }
         free(reg);
     }
@@ -60,7 +60,6 @@ int main(int argc, char const *argv[])
         else
         {
             mergeSort(&reg, 0, n);
-            int cont = 0;
             if (GerarArquivo(n, reg, argv[3]))
                 printf("Arquivo gerado.");
             else
@@ -71,8 +70,25 @@ int main(int argc, char const *argv[])
     else if (!strcmp(argv[1], "4") && argc == 5)
     {
         //Funcionalidade 4 :
+        int teste = mergeArq(argv[2], argv[3], argv[4]);
+        if (teste == -1)
+        {
+            printf("Falha no processamento.");
+        }
+        else if (teste == 0)
+        {
+            printf("Arquivo Vazio.");
+        }
+        else
+        {
+            printf("Arquivo gerado.");
+        }
+    }
+    else if (!strcmp(argv[1], "5") && argc == 5)
+    {
+        //Funcionalidade 5 :
         REGISTRO *reg1, *reg2;
-        int teste = mergeArq(&reg1, &reg2, argv[2], argv[3], argv[4]);
+        int teste = matching(argv[2], argv[3], argv[4]);
         if (teste == -1)
         {
             printf("Falha no processamento.");
@@ -88,11 +104,24 @@ int main(int argc, char const *argv[])
         free(reg1);
         free(reg2);
     }
-    else if (!strcmp(argv[1], "5") && argc == 5)
+    else if(!strcmp(argv[1], "6"))
     {
-        //Funcionalidade 5 :
-        REGISTRO *reg1, *reg2;
-        int teste = matching(&reg1, &reg2, argv[2], argv[3], argv[4]);
+        REGISTRO reg1 = {93,"GOD WAR","EA GAMES","31/12/2001"};
+        REGISTRO reg2 = {1993,"GOD WAR","EA GAMES","31/12/2001"};
+        int n = compara_reg(reg1,reg2);
+        if(n == 1){
+            printf("reg1 < reg2");
+        }else if (n == -1){
+            printf("reg2 < reg1");
+        }else{
+            printf("reg2 == reg1");
+        }
+
+    }
+    else if (!strcmp(argv[1], "7") && argc == 4)
+    {
+        //Funcionalidade 7 :
+        int teste = sortMerge(argv[2],argv[3]); 
         if (teste == -1)
         {
             printf("Falha no processamento.");
@@ -103,10 +132,11 @@ int main(int argc, char const *argv[])
         }
         else
         {
+
             printf("Arquivo gerado.");
         }
-        free(reg1);
-        free(reg2);
+        //free(reg);
+        
     }
     else
     {
