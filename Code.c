@@ -1322,14 +1322,16 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2) //Função que compara dois regist
 void multiway_merging(char **arquivo, char *arq_fname, int argc)
 {
     //Abrindo os arquivos
-    FILE **arq;
+    FILE *arq[argc-3];
 
     int n[argc-3]; //n será a quantidade de registros em um arquivo
     
     REGISTRO **reg = (REGISTRO **) malloc((argc-3) * sizeof(REGISTRO*)); //Criando  os registros para fazer análises 
+    
     for(int i = 0; i < (argc-3); i++)
     {
         arq[i] = fopen(arquivo[i], "r+b");
+        
         if(arq[i] == NULL)
             return -1;
         fseek(arq[i], 0, SEEK_END); //Pulando para o fim de cada arquivo
@@ -1350,6 +1352,7 @@ void multiway_merging(char **arquivo, char *arq_fname, int argc)
         fwrite(&status, sizeof(char), 1, arq[i]);
         fseek(arq[i], sizeof(char), SEEK_SET);
     }
+    
     FILE *arq_fin = fopen(arq_fname, "w+b");
     if(arq_fin == NULL)
         return -1;
@@ -1364,13 +1367,15 @@ void multiway_merging(char **arquivo, char *arq_fname, int argc)
         fread(&reg_aux, sizeof(REGISTRO), 1, arq[i]);
         reg[i][cont[i]] = reg_aux;
     }
-
     reg_aux = retorna_menor(argc-3, reg, cont); //Função que retorna o menor registro entre os arquivos
+    printf("TESTEINDICE: %d\n", reg_aux.indice);
     fwrite(&reg_aux, sizeof(REGISTRO), 1, arq_fin); //Escreve esse registro no arquivo final
     int indice = reg_aux.indice;
     cont[indice] = (cont[indice] + 1);
     fread(&reg_aux, sizeof(REGISTRO), 1, arq[indice]); //Passa para o próximo registro desse arquivo
     reg[indice][cont[indice]] = reg_aux;
+    
+    
 }
 
 REGISTRO retorna_menor(int quantReg, REGISTRO **reg, int *cont)
@@ -1379,27 +1384,28 @@ REGISTRO retorna_menor(int quantReg, REGISTRO **reg, int *cont)
     if(quantReg % 2 == 0) //Se a quantidade de registros a serem analisados for par
     {
         no = (int *) malloc((quantReg/2) * sizeof(int)); //Recebe 1, -1 ou 0 para indicar qual registro é menor
-        REGISTRO **regAux = (REGISTRO **) malloc((quantReg/2) * sizeof(REGISTRO*));  //Criando um registro auxiliar e alocando memória para ele
-        
+        REGISTRO *regAux = (REGISTRO *) malloc((quantReg/2) * sizeof(REGISTRO));  //Criando um registro auxiliar e alocando memória para ele
+
         for(int i = 0; i < quantReg; i = i+2)
         {
             no[j] = compara_reg(reg[i][cont[i]], reg[i+1][cont[i]]);
             if(no[j] >= 0)
             {
-                regAux[0][j] = reg[i][cont[i]];
-                regAux[0][j].indice = i;
+                regAux[j] = reg[i][cont[i]];
+                regAux[j].indice = i;
             }
             else if(no[j] < 0)
             {
-                regAux[0][j] = reg[i+1][cont[i]];
-                regAux[0][j].indice = i+1;
+                regAux[j] = reg[i+1][cont[i]];
+                regAux[j].indice = i+1;
             }
             j++;
         }
-        if(j == 0) //Condição de parada da recursão. Para quando só há um registro restante
+        if(j == 1) //Condição de parada da recursão. Para quando só há um registro restante
         {
-            return regAux[0][j];
+            printf("TESTEINDICE: %d\n", regAux[j].indice);
+            return regAux[j];
         }
-        retorna_menor(quantReg/2, regAux, cont); //Caso contrário, chama mais uma vez a função para os novos registros
+        retorna_menor(quantReg/2, &regAux, cont); //Caso contrário, chama mais uma vez a função para os novos registros
     }
 }
