@@ -28,6 +28,5 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2);
 
 int sortMerge(char *arq_name, char *arq_fname);
 
-int recursive_sortMerge(int n_arq, int cont, int sobra);
-
+int recursive_sortMerge(int n_arq, int cont, int sobra, char *arq_fnam);
 #endif 

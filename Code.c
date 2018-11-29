@@ -74,7 +74,7 @@ int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
     *n = *n - sizeof(char);
     *n = *n / 64; // 64 - número de bytes de um registro
     //REGISTRO *re = (REGISTRO*) malloc((*n)*sizeof(REGISTRO));
-    *reg = (REGISTRO**)malloc((*n) * sizeof(REGISTRO));
+    *reg = (REGISTRO*)malloc(((*n+1) * sizeof(REGISTRO)));
     REGISTRO *a = (REGISTRO*)malloc((*n) * sizeof(REGISTRO));
     char status = '0';
     rewind(arq);
@@ -122,12 +122,29 @@ void Gera_Campo1(int n, int *vetor)
         vetor[i] = aux[indice];
     }*/
     i = 0.7 * n;
-    int b = 0.7*n;
     while (i < n)
     {
-        indice = rand() % b;
-        vetor[i] = vetor[indice];
-        i++;
+        if((n-i) == 1)
+        {
+            indice = rand() % 50000;
+            while (aux[indice] == (-1))
+            {
+                indice = rand() % 50000;
+            }
+            vetor[n-1] = aux[indice];
+            vetor[n-2] = aux[indice];
+            vetor[n-3] = aux[indice];
+            break;
+        }
+        indice = rand() % 50000;
+        while (aux[indice] == (-1))
+        {
+            indice = rand() % 50000;
+        }
+        vetor[i] = aux[indice];
+        vetor[i + 1] = aux[indice];
+        aux[indice] = -1;
+        i += 2;
     }
     free(aux);
 }
@@ -190,13 +207,30 @@ void Gera_Campo2(int n, char *vetor[])
     for(i=n*0.75;i<n;i++){
         strcpy(vetor[i],strings[indice]);
     }*/
-    i = 0.75 * n;
-    int b = 0.75*n;
+     i = 0.75 * n;
     while (i < n)
     {
-        indice = rand() % b;
-        strcpy(vetor[i], vetor[indice]);
-        i++;
+        if((n-i) == 1)
+        {
+            indice = rand() % 9901;
+            while (!strcmp(strings[indice], "*"))
+            {
+                indice = rand() % 9901;
+            }
+            strcpy(vetor[n-1], strings[indice]);
+            strcpy(vetor[n-2], strings[indice]);
+            strcpy(vetor[n-3], strings[indice]);
+            break;
+        } 
+        indice = rand() % 9901;
+        while (!strcmp(strings[indice], "*"))
+        {
+            indice = rand() % 9901;
+        }
+        strcpy(vetor[i], strings[indice]);
+        strcpy(vetor[i + 1], strings[indice]);
+        strcpy(strings[indice], "*");
+        i += 2;
     }
 }
 
@@ -276,12 +310,29 @@ void Gera_Campo3(int n, char *vetor[])
         strcpy(vetor[i],strings[indice]);
     }*/
     i = 0.8 * n;
-    int b = 0.8*n;
     while (i < n)
     {
-        indice = rand() % b;
-        strcpy(vetor[i], vetor[indice]);
-        i++;
+        if((n-i) == 1)
+        {
+            indice = rand() % 9901;
+            while (!strcmp(strings[indice], "*"))
+            {
+                indice = rand() % 9901;
+            }
+            strcpy(vetor[n-1], strings[indice]);
+            strcpy(vetor[n-2], strings[indice]);
+            strcpy(vetor[n-3], strings[indice]);
+            break;
+        } 
+        indice = rand() % 9901;
+        while (!strcmp(strings[indice], "*"))
+        {
+            indice = rand() % 9901;
+        }
+        strcpy(vetor[i], strings[indice]);
+        strcpy(vetor[i + 1], strings[indice]);
+        strcpy(strings[indice], "*");
+        i += 2;
     }
 }
 
@@ -333,12 +384,29 @@ void Gera_Campo4(int n, char *vetor[])
         strcpy(vetor[i],strings[indice]);
     }*/
     i = 0.85 * n;
-    int b = 0.85*n;
     while (i < n)
     {
-        indice = rand() % b;
-        strcpy(vetor[i], vetor[indice]);
-        i++;
+        if((n-i) == 1)
+        {
+            indice = rand() % 10440;
+            while (!strcmp(strings[indice], "*"))
+            {
+                indice = rand() % 10440;
+            }
+            strcpy(vetor[n-1], strings[indice]);
+            strcpy(vetor[n-2], strings[indice]);
+            strcpy(vetor[n-3], strings[indice]);
+            break;
+        } 
+        indice = rand() % 10440;
+        while (!strcmp(strings[indice], "*"))
+        {
+            indice = rand() % 10440;
+        }
+        strcpy(vetor[i], strings[indice]);
+        strcpy(vetor[i + 1], strings[indice]);
+        strcpy(strings[indice], "*");
+        i += 2;
     }
 }
 
@@ -348,7 +416,7 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
     // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
 
     int com1 = comeco, com2 = meio + 1, comAux = 0, tam = fim - comeco + 1;
-    REGISTRO *vetAux = (REGISTRO *)malloc(tam * sizeof(REGISTRO));
+    REGISTRO *vetAux = (REGISTRO *)malloc((tam+1) * sizeof(REGISTRO));
     int teste;
     while (com1 <= meio && com2 <= fim)
     {
@@ -380,7 +448,7 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
     for (comAux = comeco; comAux <= fim; comAux++)
     { //Move os elementos de volta para o vetor original
-        if (vetAux[comAux - comeco].campo1 != 0)
+       if (vetAux[comAux - comeco].campo1 != 0)
             reg[0][comAux] = vetAux[comAux - comeco];
     }
 
@@ -428,8 +496,8 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     n1 = n1 / 64;
     n2 = n2 - sizeof(char);
     n2 = n2 / 64;
-    REGISTRO *reg1 = (REGISTRO *)malloc(n1 * sizeof(REGISTRO));
-    REGISTRO *reg2 = (REGISTRO *)malloc(n2 * sizeof(REGISTRO));
+    REGISTRO *reg1 = (REGISTRO *)malloc((n1+1) * sizeof(REGISTRO));
+    REGISTRO *reg2 = (REGISTRO *)malloc((n2+1) * sizeof(REGISTRO));
     REGISTRO reg_aux;
     //Escrevendo o status nos arquivos abertos
     char status = '0';
@@ -526,7 +594,7 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     }
     while (cont2 < n2)
     {
-        /*fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
+        fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
         fwrite(&reg2[cont2].campo2, 30*sizeof(char), 1, arq_fin);
         fwrite(&reg2[cont2].campo3, 20*sizeof(char), 1, arq_fin);
         fwrite(&reg2[cont2].campo4, 10*sizeof(char), 1, arq_fin);
@@ -538,7 +606,7 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
             fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
             fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
             reg2[cont2] = reg_aux;
-        }*/
+        }
     }
     //Retorno o status de cada arquivo para 1 para agora poder fecha-los
     status = '1';
@@ -583,8 +651,8 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
     n1 = n1 / 64;
     n2 = n2 - sizeof(char);
     n2 = n2 / 64;
-    REGISTRO *reg1 = (REGISTRO *)malloc(n1 * sizeof(REGISTRO));
-    REGISTRO *reg2 = (REGISTRO *)malloc(n2 * sizeof(REGISTRO));
+    REGISTRO *reg1 = (REGISTRO *)malloc((n1+1) * sizeof(REGISTRO));
+    REGISTRO *reg2 = (REGISTRO *)malloc((n2+1) * sizeof(REGISTRO));
     REGISTRO reg_aux;
     //Escrevendo o status nos arquivos abertos
     char status = '0';
@@ -895,26 +963,58 @@ int sortMerge(char *arq_name, char *arq_fname)
         fwrite(&status, sizeof(char), 1, sub_arq);
         fclose(sub_arq);
     }
-    //int x = recursive_sortMerge(i,0,0);
+    int x = recursive_sortMerge(i,0,0,arq_fname);
     return 1;
 }
 
-int recursive_sortMerge(int n_arq, int cont, int sobra)
+int recursive_sortMerge(int n_arq, int cont, int sobra, char *arq_fname)
 {
     char num[10][4] = {"0","1","2","3","4","5","6","7","8","9"};
     char sub_arq_name1[20];
     char sub_arq_name2[20];
     char sub_arq_name3[20];
     int n_aux, i, cont_aux, n;
-    if(n_arq == 1)
+    if (n_arq == 1)
     {
+        char final[20];
+        strcpy(final, "sub_arquivo");
+        if (cont < 10)
+        {
+            strcat(final,num[cont]);
+        }
+        else if (cont >= 10 && cont < 20)
+        {
+            strcat(final, num[1]);
+            n_aux = cont - 10;
+            strcat(final, num[n_aux]);
+        }
+        else if (cont >= 20 && cont < 30)
+        {
+            strcat(final, num[2]);
+            n_aux = cont - 20;
+            strcat(final, num[n_aux]);
+        }
+        else if (cont >= 30 && cont < 40)
+        {
+            strcat(final, num[3]);
+            n_aux = cont - 30;
+            strcat(final, num[n_aux]);;
+        }
+        else if (cont >= 40 && cont < 50)
+        {
+            strcat(final, num[4]);
+            n_aux = cont - 40;
+            strcat(final, num[n_aux]);
+        }
+        printf("\n\n %s",final);
+        rename(final, arq_fname);
         return 1;
     }
     else if(n_arq%2 == 0)
     {
         n = cont + n_arq;
         cont_aux = n;
-        printf("Valor do cont_aux = %d \n",cont_aux);
+        printf("\nValor do cont_aux = %d \n",cont_aux);
         for( i=cont;i<n;i+=2){
             strcpy(sub_arq_name1,"sub_arquivo");
             strcpy(sub_arq_name2,"sub_arquivo");
@@ -935,6 +1035,18 @@ int recursive_sortMerge(int n_arq, int cont, int sobra)
                 strcat(sub_arq_name1,num[2]);
                 strcat(sub_arq_name2,num[2]);
                 n_aux = i-20;
+                strcat(sub_arq_name1,num[n_aux]);
+                strcat(sub_arq_name2,num[n_aux+1]);
+            }else if(i>=30 && i<40){
+                strcat(sub_arq_name1,num[3]);
+                strcat(sub_arq_name2,num[3]);
+                n_aux = i-30;
+                strcat(sub_arq_name1,num[n_aux]);
+                strcat(sub_arq_name2,num[n_aux+1]);
+            }else if(i>=40 && i<50){
+                strcat(sub_arq_name1,num[4]);
+                strcat(sub_arq_name2,num[4]);
+                n_aux = i-40;
                 strcat(sub_arq_name1,num[n_aux]);
                 strcat(sub_arq_name2,num[n_aux+1]);
             }
@@ -960,16 +1072,101 @@ int recursive_sortMerge(int n_arq, int cont, int sobra)
                 n_aux = cont_aux-30;
                 strcat(sub_arq_name3,num[n_aux]);
             }
+            else if (cont_aux>=40 && cont_aux<50)
+            {
+                strcat(sub_arq_name3,num[4]);
+                n_aux = cont_aux-40;
+                strcat(sub_arq_name3,num[n_aux]);
+            }
+        
             printf("%s %s %s \n",sub_arq_name1,sub_arq_name2,sub_arq_name3);
             mergeArq(sub_arq_name1,sub_arq_name2,sub_arq_name3);
             cont_aux++;
         }
         cont = i;
-        //recursive_sortMerge(n_arq/2,cont,0);
+        printf("cont = %d\n",cont);
+        recursive_sortMerge(n_arq/2,cont,0,arq_fname);
     }
     else
     {
-        return 0;
-
+        n = cont + n_arq;
+        sobra = n-1;
+        printf("\nValor da sobra = %d\n",sobra);
+        n--;
+        cont_aux = sobra+1;
+        printf("Valor do cont_aux = %d \n",cont_aux);
+        for( i=cont;i<n;i+=2){
+            strcpy(sub_arq_name1,"sub_arquivo");
+            strcpy(sub_arq_name2,"sub_arquivo");
+            strcpy(sub_arq_name3,"sub_arquivo");
+            if(i < 10)
+            {
+                strcat(sub_arq_name1,num[i]);
+                strcat(sub_arq_name2,num[i+1]);
+            }
+            else if (i>=10 && i<20)
+            {
+                strcat(sub_arq_name1,num[1]);
+                strcat(sub_arq_name2,num[1]);
+                n_aux = i-10;
+                strcat(sub_arq_name1,num[n_aux]);
+                strcat(sub_arq_name2,num[n_aux+1]);
+            }else if(i>=20 && i<30){
+                strcat(sub_arq_name1,num[2]);
+                strcat(sub_arq_name2,num[2]);
+                n_aux = i-20;
+                strcat(sub_arq_name1,num[n_aux]);
+                strcat(sub_arq_name2,num[n_aux+1]);
+            }else if(i>=30 && i<40){
+                strcat(sub_arq_name1,num[3]);
+                strcat(sub_arq_name2,num[3]);
+                n_aux = i-30;
+                strcat(sub_arq_name1,num[n_aux]);
+                strcat(sub_arq_name2,num[n_aux+1]);
+            }else if(i>=40 && i<50){
+                strcat(sub_arq_name1,num[4]);
+                strcat(sub_arq_name2,num[4]);
+                n_aux = i-40;
+                strcat(sub_arq_name1,num[n_aux]);
+                strcat(sub_arq_name2,num[n_aux+1]);
+            }
+            if(cont_aux < 10)
+            {
+                strcat(sub_arq_name3,num[cont_aux]);
+            }
+            else if (cont_aux>=10 && cont_aux<20)
+            {
+                strcat(sub_arq_name3,num[1]);
+                n_aux = cont_aux-10;
+                strcat(sub_arq_name3,num[n_aux]);
+            }
+            else if (cont_aux>=20 && cont_aux<30)
+            {
+                strcat(sub_arq_name3,num[2]);
+                n_aux = cont_aux-20;
+                strcat(sub_arq_name3,num[n_aux]);
+            }
+            else if (cont_aux>=30 && cont_aux<40)
+            {
+                strcat(sub_arq_name3,num[3]);
+                n_aux = cont_aux-30;
+                strcat(sub_arq_name3,num[n_aux]);
+            }
+            else if (cont_aux>=40 && cont_aux<50)
+            {
+                strcat(sub_arq_name3,num[4]);
+                n_aux = cont_aux-40;
+                strcat(sub_arq_name3,num[n_aux]);
+            }
+        
+            printf("%s %s %s \n",sub_arq_name1,sub_arq_name2,sub_arq_name3);
+            mergeArq(sub_arq_name1,sub_arq_name2,sub_arq_name3);
+            cont_aux++;
+        }
+        cont = i;
+        printf("\ncont = %d",cont);
+        n_arq = n_arq/2;
+        n_arq++;
+        recursive_sortMerge(n_arq,sobra,0,arq_fname);
     }
 }
