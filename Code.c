@@ -526,7 +526,7 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     }
     while (cont2 < n2)
     {
-        fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
+        /*fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
         fwrite(&reg2[cont2].campo2, 30*sizeof(char), 1, arq_fin);
         fwrite(&reg2[cont2].campo3, 20*sizeof(char), 1, arq_fin);
         fwrite(&reg2[cont2].campo4, 10*sizeof(char), 1, arq_fin);
@@ -538,7 +538,7 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
             fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
             fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
             reg2[cont2] = reg_aux;
-        }
+        }*/
     }
     //Retorno o status de cada arquivo para 1 para agora poder fecha-los
     status = '1';
