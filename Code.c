@@ -3,6 +3,7 @@
 #include <string.h>
 #include "Code.h"
 
+/*Função responsável por gerar um vetor com um número n de registros*/
 void GeraDados(int n, REGISTRO *reg)
 {
     int *campo1 = (int *)malloc(n * sizeof(int));
@@ -31,7 +32,8 @@ void GeraDados(int n, REGISTRO *reg)
     free(campo3);
     free(campo4);
 }
-
+/*Função responsável por receber um vetor de registros de tamanho e gerar
+um arquivo binário com eles salvos*/
 int GerarArquivo(int n, REGISTRO *reg, char *arq_name)
 {
     FILE *arq = fopen(arq_name, "w+b");
@@ -41,11 +43,12 @@ int GerarArquivo(int n, REGISTRO *reg, char *arq_name)
     }
     char status = '0';
     fwrite(&status, sizeof(char), 1, arq);
-    for(int i=0; i<n; i++){
+    for (int i = 0; i < n; i++)
+    {
         fwrite(&reg[i].campo1, sizeof(int), 1, arq);
-        fwrite(&reg[i].campo2, 30*sizeof(char), 1, arq);
-        fwrite(&reg[i].campo3, 20*sizeof(char), 1, arq);
-        fwrite(&reg[i].campo4, 10*sizeof(char), 1, arq);
+        fwrite(&reg[i].campo2, 30 * sizeof(char), 1, arq);
+        fwrite(&reg[i].campo3, 20 * sizeof(char), 1, arq);
+        fwrite(&reg[i].campo4, 10 * sizeof(char), 1, arq);
     }
     status = '1';
     rewind(arq);
@@ -53,7 +56,8 @@ int GerarArquivo(int n, REGISTRO *reg, char *arq_name)
     fclose(arq);
     return 1;
 }
-
+/*Função responsável por ler um arquivo binário com arq_name e passar os registros
+para um vetor de ponteiros reg e o total de registros salvos para o ponteiro n*/
 int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
 {
     FILE *arq = fopen(arq_name, "r+b");
@@ -74,17 +78,18 @@ int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
     *n = *n - sizeof(char);
     *n = *n / 64; // 64 - número de bytes de um registro
     //REGISTRO *re = (REGISTRO*) malloc((*n)*sizeof(REGISTRO));
-    *reg = (REGISTRO*)malloc(((*n+1) * sizeof(REGISTRO)));
-    REGISTRO *a = (REGISTRO*)malloc((*n) * sizeof(REGISTRO));
+    *reg = (REGISTRO *)malloc(((*n + 1) * sizeof(REGISTRO)));
+    REGISTRO *a = (REGISTRO *)malloc((*n) * sizeof(REGISTRO));
     char status = '0';
     rewind(arq);
     fwrite(&status, sizeof(char), 1, arq);
     fseek(arq, sizeof(char), SEEK_SET);
-    for(int i=0;i<*n;i++){
-        fread(&a[i].campo1,sizeof(int),1,arq);
-        fread(&a[i].campo2,30*sizeof(char),1,arq);
-        fread(&a[i].campo3,20*sizeof(char),1,arq);
-        fread(&a[i].campo4,10*sizeof(char),1,arq);
+    for (int i = 0; i < *n; i++)
+    {
+        fread(&a[i].campo1, sizeof(int), 1, arq);
+        fread(&a[i].campo2, 30 * sizeof(char), 1, arq);
+        fread(&a[i].campo3, 20 * sizeof(char), 1, arq);
+        fread(&a[i].campo4, 10 * sizeof(char), 1, arq);
         a[i].campo4[10] = '\0';
         reg[0][i] = a[i];
     }
@@ -95,7 +100,7 @@ int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
     fclose(arq);
     return 1;
 }
-
+/*Função responsável por gerar os dados do campo1 passando-os para o *vetor de tamanho n*/
 void Gera_Campo1(int n, int *vetor)
 {
     int i, indice;
@@ -124,16 +129,16 @@ void Gera_Campo1(int n, int *vetor)
     i = 0.7 * n;
     while (i < n)
     {
-        if((n-i) == 1)
+        if ((n - i) == 1)
         {
             indice = rand() % 50000;
             while (aux[indice] == (-1))
             {
                 indice = rand() % 50000;
             }
-            vetor[n-1] = aux[indice];
-            vetor[n-2] = aux[indice];
-            vetor[n-3] = aux[indice];
+            vetor[n - 1] = aux[indice];
+            vetor[n - 2] = aux[indice];
+            vetor[n - 3] = aux[indice];
             break;
         }
         indice = rand() % 50000;
@@ -148,7 +153,7 @@ void Gera_Campo1(int n, int *vetor)
     }
     free(aux);
 }
-
+/*Função responsável por gerar os dados do campo2 passando-os para o *vetor de tamanho n*/
 void Gera_Campo2(int n, char *vetor[])
 {
     int i, j, k, indice;
@@ -207,21 +212,21 @@ void Gera_Campo2(int n, char *vetor[])
     for(i=n*0.75;i<n;i++){
         strcpy(vetor[i],strings[indice]);
     }*/
-     i = 0.75 * n;
+    i = 0.75 * n;
     while (i < n)
     {
-        if((n-i) == 1)
+        if ((n - i) == 1)
         {
             indice = rand() % 9901;
             while (!strcmp(strings[indice], "*"))
             {
                 indice = rand() % 9901;
             }
-            strcpy(vetor[n-1], strings[indice]);
-            strcpy(vetor[n-2], strings[indice]);
-            strcpy(vetor[n-3], strings[indice]);
+            strcpy(vetor[n - 1], strings[indice]);
+            strcpy(vetor[n - 2], strings[indice]);
+            strcpy(vetor[n - 3], strings[indice]);
             break;
-        } 
+        }
         indice = rand() % 9901;
         while (!strcmp(strings[indice], "*"))
         {
@@ -233,7 +238,7 @@ void Gera_Campo2(int n, char *vetor[])
         i += 2;
     }
 }
-
+/*Função responsável por gerar os dados do campo3 passando-os para o *vetor de tamanho n*/
 void Gera_Campo3(int n, char *vetor[])
 {
     int i, j, k, indice;
@@ -312,18 +317,18 @@ void Gera_Campo3(int n, char *vetor[])
     i = 0.8 * n;
     while (i < n)
     {
-        if((n-i) == 1)
+        if ((n - i) == 1)
         {
             indice = rand() % 9901;
             while (!strcmp(strings[indice], "*"))
             {
                 indice = rand() % 9901;
             }
-            strcpy(vetor[n-1], strings[indice]);
-            strcpy(vetor[n-2], strings[indice]);
-            strcpy(vetor[n-3], strings[indice]);
+            strcpy(vetor[n - 1], strings[indice]);
+            strcpy(vetor[n - 2], strings[indice]);
+            strcpy(vetor[n - 3], strings[indice]);
             break;
-        } 
+        }
         indice = rand() % 9901;
         while (!strcmp(strings[indice], "*"))
         {
@@ -335,7 +340,7 @@ void Gera_Campo3(int n, char *vetor[])
         i += 2;
     }
 }
-
+/*Função responsável por gerar os dados do campo4 passando-os para o *vetor de tamanho n*/
 void Gera_Campo4(int n, char *vetor[])
 {
     int i, j, k, indice;
@@ -386,18 +391,18 @@ void Gera_Campo4(int n, char *vetor[])
     i = 0.85 * n;
     while (i < n)
     {
-        if((n-i) == 1)
+        if ((n - i) == 1)
         {
             indice = rand() % 10440;
             while (!strcmp(strings[indice], "*"))
             {
                 indice = rand() % 10440;
             }
-            strcpy(vetor[n-1], strings[indice]);
-            strcpy(vetor[n-2], strings[indice]);
-            strcpy(vetor[n-3], strings[indice]);
+            strcpy(vetor[n - 1], strings[indice]);
+            strcpy(vetor[n - 2], strings[indice]);
+            strcpy(vetor[n - 3], strings[indice]);
             break;
-        } 
+        }
         indice = rand() % 10440;
         while (!strcmp(strings[indice], "*"))
         {
@@ -409,23 +414,26 @@ void Gera_Campo4(int n, char *vetor[])
         i += 2;
     }
 }
-
+/*Função utilizada no processo de ordenação de um vetor de registros reg juntamente com a mergeSort*/
 void merge(REGISTRO **reg, int comeco, int meio, int fim)
 {
 
     // int auxC2 = 0, auxC3 = 0, auxC4 = 0; //Variáveis auxiliares para a comparação de strings
 
     int com1 = comeco, com2 = meio + 1, comAux = 0, tam = fim - comeco + 1;
-    REGISTRO *vetAux = (REGISTRO *)malloc((tam+1) * sizeof(REGISTRO));
+    REGISTRO *vetAux = (REGISTRO *)malloc((tam + 1) * sizeof(REGISTRO));
     int teste;
     while (com1 <= meio && com2 <= fim)
     {
 
-        teste = compara_reg(reg[0][com1],reg[0][com2]);
-        if(teste == 1){
+        teste = compara_reg(reg[0][com1], reg[0][com2]);
+        if (teste == 1)
+        {
             vetAux[comAux] = reg[0][com1];
             com1++;
-        }else{
+        }
+        else
+        {
             vetAux[comAux] = reg[0][com2];
             com2++;
         }
@@ -448,13 +456,13 @@ void merge(REGISTRO **reg, int comeco, int meio, int fim)
 
     for (comAux = comeco; comAux <= fim; comAux++)
     { //Move os elementos de volta para o vetor original
-       if (vetAux[comAux - comeco].campo1 != 0)
+        if (vetAux[comAux - comeco].campo1 != 0)
             reg[0][comAux] = vetAux[comAux - comeco];
     }
 
     free(vetAux);
 }
-
+/*Função sort utilizada no processo de ordenação de um vetor de registros reg (algoritmo sort MergeSort de complexidade O(nlogn))*/
 void mergeSort(REGISTRO **reg, int comeco, int fim)
 {
 
@@ -468,7 +476,8 @@ void mergeSort(REGISTRO **reg, int comeco, int fim)
         merge(reg, comeco, meio, fim);
     }
 }
-
+//Função responsável por realizar operação de merge entre dois arquivos arq_name1 e arq_name2
+//gerando um arquivo final que possui todos os registros dos outros dois ordenados
 int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
 {
     //Abrindo os arquivos
@@ -496,8 +505,8 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     n1 = n1 / 64;
     n2 = n2 - sizeof(char);
     n2 = n2 / 64;
-    REGISTRO *reg1 = (REGISTRO *)malloc((n1+1) * sizeof(REGISTRO));
-    REGISTRO *reg2 = (REGISTRO *)malloc((n2+1) * sizeof(REGISTRO));
+    REGISTRO *reg1 = (REGISTRO *)malloc((n1 + 1) * sizeof(REGISTRO));
+    REGISTRO *reg2 = (REGISTRO *)malloc((n2 + 1) * sizeof(REGISTRO));
     REGISTRO reg_aux;
     //Escrevendo o status nos arquivos abertos
     char status = '0';
@@ -511,60 +520,62 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
 
     //Començando a ler os arquivos e declarando variaveis auxiliáres
     int cont1 = 0, cont2 = 0, teste;
-    fread(&reg_aux.campo1,sizeof(int),1,arq1);
-    fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-    fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-    fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+    fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+    fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+    fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+    fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
     reg1[cont1] = reg_aux;
-    fread(&reg_aux.campo1,sizeof(int),1,arq2);
-    fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-    fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-    fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+    fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+    fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+    fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+    fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
     reg2[cont2] = reg_aux;
     while (1)
     {
-        teste = compara_reg(reg1[cont1],reg2[cont2]);
-        if(teste == 1)
+        teste = compara_reg(reg1[cont1], reg2[cont2]);
+        if (teste == 1)
         {
             fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
-            fwrite(&reg1[cont1].campo2, 30*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo3, 20*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo4, 10*sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo4, 10 * sizeof(char), 1, arq_fin);
             cont1++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq1);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
             reg1[cont1] = reg_aux;
         }
-        else if(teste == -1)
+        else if (teste == -1)
         {
             fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
-            fwrite(&reg2[cont2].campo2, 30*sizeof(char), 1, arq_fin);
-            fwrite(&reg2[cont2].campo3, 20*sizeof(char), 1, arq_fin);
-            fwrite(&reg2[cont2].campo4, 10*sizeof(char), 1, arq_fin);
+            fwrite(&reg2[cont2].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(&reg2[cont2].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(&reg2[cont2].campo4, 10 * sizeof(char), 1, arq_fin);
             cont2++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq2);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
             reg2[cont2] = reg_aux;
-        }else{
+        }
+        else
+        {
             fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
-            fwrite(&reg1[cont1].campo2, 30*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo3, 20*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo4, 10*sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo4, 10 * sizeof(char), 1, arq_fin);
             cont1++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq1);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
             reg1[cont1] = reg_aux;
             cont2++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq2);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
             reg2[cont2] = reg_aux;
         }
         //Continuo o loop até ter lido o número total de registros de um dos arquivos
@@ -579,32 +590,32 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     while (cont1 < n1)
     {
         fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
-        fwrite(&reg1[cont1].campo2, 30*sizeof(char), 1, arq_fin);
-        fwrite(&reg1[cont1].campo3, 20*sizeof(char), 1, arq_fin);
-        fwrite(&reg1[cont1].campo4, 10*sizeof(char), 1, arq_fin);
+        fwrite(&reg1[cont1].campo2, 30 * sizeof(char), 1, arq_fin);
+        fwrite(&reg1[cont1].campo3, 20 * sizeof(char), 1, arq_fin);
+        fwrite(&reg1[cont1].campo4, 10 * sizeof(char), 1, arq_fin);
         cont1++;
         if (cont1 != n1)
         {
-            fread(&reg_aux.campo1,sizeof(int),1,arq1);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
             reg1[cont1] = reg_aux;
         }
     }
     while (cont2 < n2)
     {
         fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
-        fwrite(&reg2[cont2].campo2, 30*sizeof(char), 1, arq_fin);
-        fwrite(&reg2[cont2].campo3, 20*sizeof(char), 1, arq_fin);
-        fwrite(&reg2[cont2].campo4, 10*sizeof(char), 1, arq_fin);
+        fwrite(&reg2[cont2].campo2, 30 * sizeof(char), 1, arq_fin);
+        fwrite(&reg2[cont2].campo3, 20 * sizeof(char), 1, arq_fin);
+        fwrite(&reg2[cont2].campo4, 10 * sizeof(char), 1, arq_fin);
         cont2++;
         if (cont2 != n1)
         {
-            fread(&reg_aux.campo1,sizeof(int),1,arq2);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
             reg2[cont2] = reg_aux;
         }
     }
@@ -623,7 +634,8 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     free(reg2);
     return 1;
 }
-
+/*Função responsável por realizar operação de match entre dois arquivos arq_name1 e arq_name2
+gerando um arquivo final que possui todos a intersecção dos registros dos outros dois ordenados*/
 int matching(char *arq_name1, char *arq_name2, char *arq_fname)
 {
     //Abrindo os arquivos
@@ -651,8 +663,8 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
     n1 = n1 / 64;
     n2 = n2 - sizeof(char);
     n2 = n2 / 64;
-    REGISTRO *reg1 = (REGISTRO *)malloc((n1+1) * sizeof(REGISTRO));
-    REGISTRO *reg2 = (REGISTRO *)malloc((n2+1) * sizeof(REGISTRO));
+    REGISTRO *reg1 = (REGISTRO *)malloc((n1 + 1) * sizeof(REGISTRO));
+    REGISTRO *reg2 = (REGISTRO *)malloc((n2 + 1) * sizeof(REGISTRO));
     REGISTRO reg_aux;
     //Escrevendo o status nos arquivos abertos
     char status = '0';
@@ -666,60 +678,62 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
 
     //Començando a ler os arquivos e declarando variaveis auxiliáres
     int cont1 = 0, cont2 = 0, teste;
-    fread(&reg_aux.campo1,sizeof(int),1,arq1);
-    fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-    fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-    fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+    fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+    fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+    fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+    fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
     reg1[cont1] = reg_aux;
-    fread(&reg_aux.campo1,sizeof(int),1,arq2);
-    fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-    fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-    fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+    fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+    fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+    fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+    fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
     reg2[cont2] = reg_aux;
     while (1)
     {
-        teste = compara_reg(reg1[cont1],reg2[cont2]);
-        if(teste == 1)
+        teste = compara_reg(reg1[cont1], reg2[cont2]);
+        if (teste == 1)
         {
             fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
-            fwrite(&reg1[cont1].campo2, 30*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo3, 20*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo4, 10*sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo4, 10 * sizeof(char), 1, arq_fin);
             cont1++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq1);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
             reg1[cont1] = reg_aux;
         }
-        else if(teste == -1)
+        else if (teste == -1)
         {
             fwrite(&reg2[cont2].campo1, sizeof(int), 1, arq_fin);
-            fwrite(&reg2[cont2].campo2, 30*sizeof(char), 1, arq_fin);
-            fwrite(&reg2[cont2].campo3, 20*sizeof(char), 1, arq_fin);
-            fwrite(&reg2[cont2].campo4, 10*sizeof(char), 1, arq_fin);
+            fwrite(&reg2[cont2].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(&reg2[cont2].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(&reg2[cont2].campo4, 10 * sizeof(char), 1, arq_fin);
             cont2++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq2);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
             reg2[cont2] = reg_aux;
-        }else{
+        }
+        else
+        {
             fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
-            fwrite(&reg1[cont1].campo2, 30*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo3, 20*sizeof(char), 1, arq_fin);
-            fwrite(&reg1[cont1].campo4, 10*sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(&reg1[cont1].campo4, 10 * sizeof(char), 1, arq_fin);
             cont1++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq1);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq1);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq1);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq1);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq1);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq1);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq1);
             reg1[cont1] = reg_aux;
             cont2++;
-            fread(&reg_aux.campo1,sizeof(int),1,arq2);
-            fread(&reg_aux.campo2,30*sizeof(char),1,arq2);
-            fread(&reg_aux.campo3,20*sizeof(char),1,arq2);
-            fread(&reg_aux.campo4,10*sizeof(char),1,arq2);
+            fread(&reg_aux.campo1, sizeof(int), 1, arq2);
+            fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq2);
+            fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq2);
             reg2[cont2] = reg_aux;
         }
         //Continuo o loop até ter lido o número total de registros de um dos arquivos
@@ -743,8 +757,9 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
     fclose(arq_fin);
     return 1;
 }
-
-int compara_reg(REGISTRO reg1, REGISTRO reg2) //Função que retorna 1 se reg1 < reg2 e -1 c.c.
+/*Função auxiliar utilizada em vários outros processos que possui a funcionalidade de comparar
+dois registros retornando 1 caso reg1<reg2 , -1 caso reg2<reg1 e 0 caso reg1 = reg2*/
+int compara_reg(REGISTRO reg1, REGISTRO reg2)
 {
     if (reg1.campo1 < reg2.campo1)
     {
@@ -879,7 +894,8 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2) //Função que retorna 1 se reg1 <
         }
     }
 }
-
+/*Função que recebe um arquivo inicial (arq_name) e inicia o processo de sortMerge do arquivo
+gerando os primeiros sub_arquivos ordenados contendo 250 registros cada um (equivalente a uma pág. de disco) e depois chama a recursive_sortMerge para finalizar o processo*/
 int sortMerge(char *arq_name, char *arq_fname)
 {
     FILE *arq = fopen(arq_name, "r+b");
@@ -900,7 +916,7 @@ int sortMerge(char *arq_name, char *arq_fname)
     //Calculo o número total de registros no arquivo (n)
     n = n - sizeof(char);
     n = n / 64;
-    //Aloco memória para os 1000 registros (4 páginas de disco) que poderei trabalhar no buffer (RAM) 
+    //Aloco memória para os 1000 registros (4 páginas de disco) que poderei trabalhar no buffer (RAM)
     REGISTRO *reg = (REGISTRO *)malloc((250) * sizeof(REGISTRO));
     //Defino status 0 para o arquivo após abri-lo indicando que irei manipula-lo
     char status = '0';
@@ -919,57 +935,61 @@ int sortMerge(char *arq_name, char *arq_fname)
         sobra = n - (n_arq * 250);
         n_arq++;
     }
-    char num[10][4] = {"0","1","2","3","4","5","6","7","8","9"};
+    char num[10][4] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     char sub_arq_name[20];
     int n_aux;
     FILE *sub_arq;
     int i;
-    for(i=0; i<n_arq; i++){
-        for(int j=0;j<250;j++)
+    for (i = 0; i < n_arq; i++)
+    {
+        for (int j = 0; j < 250; j++)
         {
-            fread(&reg[j].campo1,sizeof(int),1,arq);
-            fread(&reg[j].campo2,30*sizeof(char),1,arq);
-            fread(&reg[j].campo3,20*sizeof(char),1,arq);
-            fread(&reg[j].campo4,10*sizeof(char),1,arq);
+            fread(&reg[j].campo1, sizeof(int), 1, arq);
+            fread(&reg[j].campo2, 30 * sizeof(char), 1, arq);
+            fread(&reg[j].campo3, 20 * sizeof(char), 1, arq);
+            fread(&reg[j].campo4, 10 * sizeof(char), 1, arq);
             //printf("%d %s %s %s \n",reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
         }
-        mergeSort(&reg,0,249);
-        strcpy(sub_arq_name,"sub_arquivo");
-        if(i < 10)
+        mergeSort(&reg, 0, 249);
+        strcpy(sub_arq_name, "sub_arquivo");
+        if (i < 10)
         {
-            strcat(sub_arq_name,num[i]);
+            strcat(sub_arq_name, num[i]);
         }
-        else if (i>=10 && i<20)
+        else if (i >= 10 && i < 20)
         {
-            strcat(sub_arq_name,num[1]);
-            n_aux = i-10;
-            strcat(sub_arq_name,num[n_aux]);
-        }else if(i>=20 && i<30){
-            strcat(sub_arq_name,num[2]);
-            n_aux = i-20;
-            strcat(sub_arq_name,num[n_aux]);
+            strcat(sub_arq_name, num[1]);
+            n_aux = i - 10;
+            strcat(sub_arq_name, num[n_aux]);
+        }
+        else if (i >= 20 && i < 30)
+        {
+            strcat(sub_arq_name, num[2]);
+            n_aux = i - 20;
+            strcat(sub_arq_name, num[n_aux]);
         }
         sub_arq = fopen(sub_arq_name, "w+b");
         status = '0';
         fwrite(&status, sizeof(char), 1, sub_arq);
-        for(int j=0; j<250; j++){
+        for (int j = 0; j < 250; j++)
+        {
             fwrite(&reg[j].campo1, sizeof(int), 1, sub_arq);
-            fwrite(&reg[j].campo2, 30*sizeof(char), 1, sub_arq);
-            fwrite(&reg[j].campo3, 20*sizeof(char), 1, sub_arq);
-            fwrite(&reg[j].campo4, 10*sizeof(char), 1, sub_arq);
+            fwrite(&reg[j].campo2, 30 * sizeof(char), 1, sub_arq);
+            fwrite(&reg[j].campo3, 20 * sizeof(char), 1, sub_arq);
+            fwrite(&reg[j].campo4, 10 * sizeof(char), 1, sub_arq);
         }
         status = '1';
         rewind(sub_arq);
         fwrite(&status, sizeof(char), 1, sub_arq);
         fclose(sub_arq);
     }
-    int x = recursive_sortMerge(i,0,0,arq_fname);
+    int x = recursive_sortMerge(i, 0, arq_fname);
     return 1;
 }
-
-int recursive_sortMerge(int n_arq, int cont, int sobra, char *arq_fname)
+/*Função recursiva que a partir dos primeiros subarquivos gerados realiza operação de merge com cada dois arquivos até gerar o arquivo final (arq_fname) com todos os registros de arq_name ordenados*/
+int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
 {
-    char num[10][4] = {"0","1","2","3","4","5","6","7","8","9"};
+    char num[10][4] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     char sub_arq_name1[20];
     char sub_arq_name2[20];
     char sub_arq_name3[20];
@@ -980,7 +1000,7 @@ int recursive_sortMerge(int n_arq, int cont, int sobra, char *arq_fname)
         strcpy(final, "sub_arquivo");
         if (cont < 10)
         {
-            strcat(final,num[cont]);
+            strcat(final, num[cont]);
         }
         else if (cont >= 10 && cont < 20)
         {
@@ -998,7 +1018,8 @@ int recursive_sortMerge(int n_arq, int cont, int sobra, char *arq_fname)
         {
             strcat(final, num[3]);
             n_aux = cont - 30;
-            strcat(final, num[n_aux]);;
+            strcat(final, num[n_aux]);
+            ;
         }
         else if (cont >= 40 && cont < 50)
         {
@@ -1006,167 +1027,181 @@ int recursive_sortMerge(int n_arq, int cont, int sobra, char *arq_fname)
             n_aux = cont - 40;
             strcat(final, num[n_aux]);
         }
-        printf("\n\n %s",final);
+        //printf("\n\n %s", final);
         rename(final, arq_fname);
         return 1;
     }
-    else if(n_arq%2 == 0)
+    else if (n_arq % 2 == 0)
     {
         n = cont + n_arq;
         cont_aux = n;
-        printf("\nValor do cont_aux = %d \n",cont_aux);
-        for( i=cont;i<n;i+=2){
-            strcpy(sub_arq_name1,"sub_arquivo");
-            strcpy(sub_arq_name2,"sub_arquivo");
-            strcpy(sub_arq_name3,"sub_arquivo");
-            if(i < 10)
+        //printf("\nValor do cont_aux = %d \n", cont_aux);
+        for (i = cont; i < n; i += 2)
+        {
+            strcpy(sub_arq_name1, "sub_arquivo");
+            strcpy(sub_arq_name2, "sub_arquivo");
+            strcpy(sub_arq_name3, "sub_arquivo");
+            if (i < 10)
             {
-                strcat(sub_arq_name1,num[i]);
-                strcat(sub_arq_name2,num[i+1]);
+                strcat(sub_arq_name1, num[i]);
+                strcat(sub_arq_name2, num[i + 1]);
             }
-            else if (i>=10 && i<20)
+            else if (i >= 10 && i < 20)
             {
-                strcat(sub_arq_name1,num[1]);
-                strcat(sub_arq_name2,num[1]);
-                n_aux = i-10;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
-            }else if(i>=20 && i<30){
-                strcat(sub_arq_name1,num[2]);
-                strcat(sub_arq_name2,num[2]);
-                n_aux = i-20;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
-            }else if(i>=30 && i<40){
-                strcat(sub_arq_name1,num[3]);
-                strcat(sub_arq_name2,num[3]);
-                n_aux = i-30;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
-            }else if(i>=40 && i<50){
-                strcat(sub_arq_name1,num[4]);
-                strcat(sub_arq_name2,num[4]);
-                n_aux = i-40;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
+                strcat(sub_arq_name1, num[1]);
+                strcat(sub_arq_name2, num[1]);
+                n_aux = i - 10;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            if(cont_aux < 10)
+            else if (i >= 20 && i < 30)
             {
-                strcat(sub_arq_name3,num[cont_aux]);
+                strcat(sub_arq_name1, num[2]);
+                strcat(sub_arq_name2, num[2]);
+                n_aux = i - 20;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (cont_aux>=10 && cont_aux<20)
+            else if (i >= 30 && i < 40)
             {
-                strcat(sub_arq_name3,num[1]);
-                n_aux = cont_aux-10;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name1, num[3]);
+                strcat(sub_arq_name2, num[3]);
+                n_aux = i - 30;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (cont_aux>=20 && cont_aux<30)
+            else if (i >= 40 && i < 50)
             {
-                strcat(sub_arq_name3,num[2]);
-                n_aux = cont_aux-20;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name1, num[4]);
+                strcat(sub_arq_name2, num[4]);
+                n_aux = i - 40;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (cont_aux>=30 && cont_aux<40)
+            if (cont_aux < 10)
             {
-                strcat(sub_arq_name3,num[3]);
-                n_aux = cont_aux-30;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name3, num[cont_aux]);
             }
-            else if (cont_aux>=40 && cont_aux<50)
+            else if (cont_aux >= 10 && cont_aux < 20)
             {
-                strcat(sub_arq_name3,num[4]);
-                n_aux = cont_aux-40;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name3, num[1]);
+                n_aux = cont_aux - 10;
+                strcat(sub_arq_name3, num[n_aux]);
             }
-        
-            printf("%s %s %s \n",sub_arq_name1,sub_arq_name2,sub_arq_name3);
-            mergeArq(sub_arq_name1,sub_arq_name2,sub_arq_name3);
+            else if (cont_aux >= 20 && cont_aux < 30)
+            {
+                strcat(sub_arq_name3, num[2]);
+                n_aux = cont_aux - 20;
+                strcat(sub_arq_name3, num[n_aux]);
+            }
+            else if (cont_aux >= 30 && cont_aux < 40)
+            {
+                strcat(sub_arq_name3, num[3]);
+                n_aux = cont_aux - 30;
+                strcat(sub_arq_name3, num[n_aux]);
+            }
+            else if (cont_aux >= 40 && cont_aux < 50)
+            {
+                strcat(sub_arq_name3, num[4]);
+                n_aux = cont_aux - 40;
+                strcat(sub_arq_name3, num[n_aux]);
+            }
+
+            //printf("%s %s %s \n", sub_arq_name1, sub_arq_name2, sub_arq_name3);
+            mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
         }
         cont = i;
-        printf("cont = %d\n",cont);
-        recursive_sortMerge(n_arq/2,cont,0,arq_fname);
+        //printf("cont = %d\n", cont);
+        recursive_sortMerge(n_arq / 2, cont, arq_fname);
     }
     else
     {
         n = cont + n_arq;
-        sobra = n-1;
-        printf("\nValor da sobra = %d\n",sobra);
+        int sobra = n - 1;
+        //printf("\nValor da sobra = %d\n", sobra);
         n--;
-        cont_aux = sobra+1;
-        printf("Valor do cont_aux = %d \n",cont_aux);
-        for( i=cont;i<n;i+=2){
-            strcpy(sub_arq_name1,"sub_arquivo");
-            strcpy(sub_arq_name2,"sub_arquivo");
-            strcpy(sub_arq_name3,"sub_arquivo");
-            if(i < 10)
+        cont_aux = sobra + 1;
+        //printf("Valor do cont_aux = %d \n", cont_aux);
+        for (i = cont; i < n; i += 2)
+        {
+            strcpy(sub_arq_name1, "sub_arquivo");
+            strcpy(sub_arq_name2, "sub_arquivo");
+            strcpy(sub_arq_name3, "sub_arquivo");
+            if (i < 10)
             {
-                strcat(sub_arq_name1,num[i]);
-                strcat(sub_arq_name2,num[i+1]);
+                strcat(sub_arq_name1, num[i]);
+                strcat(sub_arq_name2, num[i + 1]);
             }
-            else if (i>=10 && i<20)
+            else if (i >= 10 && i < 20)
             {
-                strcat(sub_arq_name1,num[1]);
-                strcat(sub_arq_name2,num[1]);
-                n_aux = i-10;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
-            }else if(i>=20 && i<30){
-                strcat(sub_arq_name1,num[2]);
-                strcat(sub_arq_name2,num[2]);
-                n_aux = i-20;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
-            }else if(i>=30 && i<40){
-                strcat(sub_arq_name1,num[3]);
-                strcat(sub_arq_name2,num[3]);
-                n_aux = i-30;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
-            }else if(i>=40 && i<50){
-                strcat(sub_arq_name1,num[4]);
-                strcat(sub_arq_name2,num[4]);
-                n_aux = i-40;
-                strcat(sub_arq_name1,num[n_aux]);
-                strcat(sub_arq_name2,num[n_aux+1]);
+                strcat(sub_arq_name1, num[1]);
+                strcat(sub_arq_name2, num[1]);
+                n_aux = i - 10;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            if(cont_aux < 10)
+            else if (i >= 20 && i < 30)
             {
-                strcat(sub_arq_name3,num[cont_aux]);
+                strcat(sub_arq_name1, num[2]);
+                strcat(sub_arq_name2, num[2]);
+                n_aux = i - 20;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (cont_aux>=10 && cont_aux<20)
+            else if (i >= 30 && i < 40)
             {
-                strcat(sub_arq_name3,num[1]);
-                n_aux = cont_aux-10;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name1, num[3]);
+                strcat(sub_arq_name2, num[3]);
+                n_aux = i - 30;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (cont_aux>=20 && cont_aux<30)
+            else if (i >= 40 && i < 50)
             {
-                strcat(sub_arq_name3,num[2]);
-                n_aux = cont_aux-20;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name1, num[4]);
+                strcat(sub_arq_name2, num[4]);
+                n_aux = i - 40;
+                strcat(sub_arq_name1, num[n_aux]);
+                strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (cont_aux>=30 && cont_aux<40)
+            if (cont_aux < 10)
             {
-                strcat(sub_arq_name3,num[3]);
-                n_aux = cont_aux-30;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name3, num[cont_aux]);
             }
-            else if (cont_aux>=40 && cont_aux<50)
+            else if (cont_aux >= 10 && cont_aux < 20)
             {
-                strcat(sub_arq_name3,num[4]);
-                n_aux = cont_aux-40;
-                strcat(sub_arq_name3,num[n_aux]);
+                strcat(sub_arq_name3, num[1]);
+                n_aux = cont_aux - 10;
+                strcat(sub_arq_name3, num[n_aux]);
             }
-        
-            printf("%s %s %s \n",sub_arq_name1,sub_arq_name2,sub_arq_name3);
-            mergeArq(sub_arq_name1,sub_arq_name2,sub_arq_name3);
+            else if (cont_aux >= 20 && cont_aux < 30)
+            {
+                strcat(sub_arq_name3, num[2]);
+                n_aux = cont_aux - 20;
+                strcat(sub_arq_name3, num[n_aux]);
+            }
+            else if (cont_aux >= 30 && cont_aux < 40)
+            {
+                strcat(sub_arq_name3, num[3]);
+                n_aux = cont_aux - 30;
+                strcat(sub_arq_name3, num[n_aux]);
+            }
+            else if (cont_aux >= 40 && cont_aux < 50)
+            {
+                strcat(sub_arq_name3, num[4]);
+                n_aux = cont_aux - 40;
+                strcat(sub_arq_name3, num[n_aux]);
+            }
+
+            //printf("%s %s %s \n", sub_arq_name1, sub_arq_name2, sub_arq_name3);
+            mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
         }
         cont = i;
-        printf("\ncont = %d",cont);
-        n_arq = n_arq/2;
+        //printf("\ncont = %d", cont);
+        n_arq = n_arq / 2;
         n_arq++;
-        recursive_sortMerge(n_arq,sobra,0,arq_fname);
+        recursive_sortMerge(n_arq, sobra, arq_fname);
     }
 }

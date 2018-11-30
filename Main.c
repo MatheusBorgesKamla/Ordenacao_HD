@@ -134,9 +134,7 @@ int main(int argc, char const *argv[])
         {
 
             printf("Arquivo gerado.");
-        }
-        //free(reg);
-        
+        }        
     }
     else
     {
