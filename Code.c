@@ -899,9 +899,12 @@ int multiway_merging(char **arquivos_entrada,char ** arq_fname ,int num_arq)
     //Abrindo os arquivos
     FILE *arq[num_arq];
 
-    int n[num_arq]; //n será a quantidade de registros em um arquivo
+    int n[num_arq]; //n será o vetor que guarda quantidade de registros em cada arquivo
+    int cont_arq[num_arq]; //será o contador de quantos registros já foram lidos de cada arquivo
     
     REGISTRO **reg = (REGISTRO **) malloc((num_arq) * sizeof(REGISTRO*)); //Criando  os registros para fazer análises 
+
+    REGISTRO reg_aux;
    
     for(int i = 0; i < num_arq; i++)
     {
@@ -910,7 +913,7 @@ int multiway_merging(char **arquivos_entrada,char ** arq_fname ,int num_arq)
             return -1;
         fseek(arq[i], 0, SEEK_END); //Pulando para o fim de cada arquivo
         n[i] = ftell(arq[i]); //Lê o indicador de posição em bytes
-        if(n[i] == 0)
+        if(n[i] == 0) // Se um dos arquivos estiverem vazios
             return 0;
         //Calculando a quantidade de elementos de cada arquivo
         n[i] = n[i] - sizeof(char);
@@ -922,50 +925,160 @@ int multiway_merging(char **arquivos_entrada,char ** arq_fname ,int num_arq)
         char status = '0';
         fwrite(&status, sizeof(char), 1, arq[i]);
         fseek(arq[i], sizeof(char), SEEK_SET);
+        //Lendo o primeiro registro de cada arquivo
+        fread(&reg_aux.campo1, sizeof(int), 1, arq[i]);
+        fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq[i]);
+        fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq[i]);
+        fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq[i]);
+        reg[i][0] = reg_aux;
+        cont_arq[i] = 0; //inicializo contadores como zero
     }
-    
+    //Arquivo final é criado e escrito o status
     FILE *arq_fin = fopen(arq_fname, "w+b");
     if(arq_fin == NULL)
         return -1;
     char status = '0';
     fwrite(&status, sizeof(char), 1, arq_fin);
-    recursive_multMerge(reg, *arq, arq_fin, n, num_arq);
+    //É chamado a função recursive_multMerge que irá ir lendo os registros, achando os menores pela árvore de seleção na função Acha_menor e escrevendo os menores no arquivo final
+    recursive_multMerge(reg,arq,arq_fin,n,num_arq,cont_arq);
+    for(int i = 0; i < num_arq; i++){
+        status = '1';
+        rewind(arq[i]);
+        fwrite(&status, sizeof(char), 1, arq[i]);
+        fclose(arq[i]);
+    }
+    rewind(arq_fin);
+    fwrite(&status, sizeof(char), 1, arq_fin);
+    fclose(arq_fin);
     return 1;
 }
 
-int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int num_arq)
+int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int num_arq, int cont_arq[])
 {   
+    REGISTRO reg_aux; //Registro auxiliar utilizado para leitura dos registros dos arquivos
+    REGISTRO Vet_aux[num_arq];// Vetor de registro auxiliar que utilizado para passar p/ Acha_menor
+    REGISTRO menor; //Registro menor retornado pela Acha_menor
+    int i, teste;
+    if(num_arq == 1){
+        while (cont_arq[0] < n[0])
+        {
+            fwrite(reg[0][cont_arq[0]].campo1, sizeof(int), 1, arq_fin);
+            fwrite(reg[0][cont_arq[0]].campo2, 30 * sizeof(char), 1, arq_fin);
+            fwrite(reg[0][cont_arq[0]].campo3, 20 * sizeof(char), 1, arq_fin);
+            fwrite(reg[0][cont_arq[0]].campo4, 10 * sizeof(char), 1, arq_fin);
+            cont_arq[0]++;
+            if (cont_arq[0] != n[0])
+            {
+                fread(&reg_aux.campo1, sizeof(int), 1, arq[0]);
+                fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq[0]);
+                fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq[0]);
+                fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq[0]);
+                reg[0][cont_arq[0]] = reg_aux;
+            }
+        }
+        return 1;
+    }
     while(1)
     {
+        int i;
+        //Passo todas os registros atuais em análise de cada arquivo para o Vet_aux que será usado na Acha_menor
+        for(i=0; i<num_arq; i++){
+            Vet_aux[i] = reg[i][cont_arq[i]];
+            //printf("%d %s %s %s \n",Vet_aux[i].campo1,Vet_aux[i].campo2,Vet_aux[i].campo3,Vet_aux[i].campo4);
+        }
+        //Passo o menor registro achado para menor
+        Acha_menor(Vet_aux,i,&menor);
+        for(i=0; i<num_arq; i++){
+            //Testo de qual arquivo pertence o menor registro e ao achar eu escrevo o menor registro achado no arquivo final, leio mais um registro do arquivo ao qual pertence o menor e incremento seu contador
+            if(menor.campo1 == reg[i][cont_arq[i]].campo1 && !strcmp(menor.campo2,reg[i][cont_arq[i]].campo2) && !strcmp(menor.campo3,reg[i][cont_arq[i]].campo3) && !strcmp(menor.campo4,reg[i][cont_arq[i]].campo4) ){
+                fwrite(&reg[i][cont_arq[i]].campo1, sizeof(int), 1, arq_fin);
+                fwrite(&reg[i][cont_arq[i]].campo2, 30 * sizeof(char), 1, arq_fin);
+                fwrite(&reg[i][cont_arq[i]].campo3, 20 * sizeof(char), 1, arq_fin);
+                fwrite(&reg[i][cont_arq[i]].campo4, 10 * sizeof(char), 1, arq_fin);
+                cont_arq[i]++;
+                fread(&reg_aux.campo1, sizeof(int), 1, arq[i]);
+                fread(&reg_aux.campo2, 30 * sizeof(char), 1, arq[i]);
+                fread(&reg_aux.campo3, 20 * sizeof(char), 1, arq[i]);
+                fread(&reg_aux.campo4, 10 * sizeof(char), 1, arq[i]);
+                reg[i][cont_arq[i]] = reg_aux;
+                
+                if (cont_arq[i]>=n[i])
+                {
+                    teste = 1; //testa se o contador de um dos arquivos já leu todo os seus registros, ou seja, se o arquivo já foi todo lido
+                    break;
+                }
+            }
+        }
 
+        if(teste == 1)
+            break ;//um dos arquivos já foi totalmente lido, então tenho que desconsiderar ele agora 
     }
-    
-    return 1;
+    //Agora vou gerar os novos vetores de arquivos, contadores e n sem o arquivo que foi encerrado
+    FILE *novos_arquivos[num_arq-1];
+    int novo_n[num_arq-1];
+    int novo_cont_arq[num_arq-1];
+    REGISTRO **novo_reg = (REGISTRO**) malloc((num_arq-1)*sizeof(REGISTRO*));
 
+    for(int j=0;j<num_arq-1;j++){
+        if(j>=i){
+            novos_arquivos[j] = arq[j+1];
+            novo_n[j] = n[j+1];
+            novo_cont_arq[j] = cont_arq[j+1];
+            novo_reg[j] = reg[j+1];
+        }
+        novos_arquivos[j] = arq[j];
+        novo_n[j] = n[j];
+        novo_cont_arq[j] = cont_arq[j];
+        novo_reg[j] = reg[j];
+    }
+    //recursive_multMerge(novo_reg,novos_arquivos,arq_fin,novo_n,num_arq--,novo_cont_arq);*/
+    return 1;
 }
 
-REGISTRO Acha_menor(REGISTRO reg[], int n_reg, int cont, int pos_menor)
+void Acha_menor(REGISTRO reg[], int n_reg, REGISTRO* fin)
 {   
     if(n_reg == 1)
     {
-        return reg[pos_menor];
+        *fin = reg[0];
     }
     else if(n_reg%2 == 0)
     {
         REGISTRO novo_reg[n_reg/2];
+        int teste, pos_menor, cont_arq = 0;
         for(int i=0; i < n_reg; i+=2)
         {
-            compara_reg(reg[i],reg[i+1]);
-
+            teste = compara_reg(reg[i],reg[i+1]);
+            if(teste >= 0)
+                pos_menor = i;
+            else 
+                pos_menor = i+1;
+            novo_reg[cont_arq] = reg[pos_menor];
+            cont_arq++;
+            //printf("%d %s %s %s\n",reg[pos_menor].campo1,reg[pos_menor].campo2,reg[pos_menor].campo3,reg[pos_menor].campo4);
         }
+        Acha_menor(novo_reg,n_reg/2,fin);
     }
     else
     {
-
+        int aux = (n_reg/2) + 1;
+        REGISTRO novo_reg[aux];
+        int teste, pos_menor, cont_arq = 0;
+        for(int i=0; i < n_reg-1; i+=2)
+        {
+            teste = compara_reg(reg[i],reg[i+1]);
+            if(teste >= 0)
+                pos_menor = i;
+            else 
+                pos_menor = i+1;
+            novo_reg[cont_arq] = reg[pos_menor];
+            cont_arq++;
+            //printf("%d %s %s %s\n",reg[pos_menor].campo1,reg[pos_menor].campo2,reg[pos_menor].campo3,reg[pos_menor].campo4);
+        }
+        novo_reg[aux-1] = reg[n_reg-1];
+        Acha_menor(novo_reg,aux,fin);
     }
 
 } 
-
 
 /*Função que recebe um arquivo inicial (arq_name) e inicia o processo de sortMerge do arquivo
 gerando os primeiros sub_arquivos ordenados contendo 1000 registros cada um (equivalente a 4 pág. de disco) e depois chama a recursive_sortMerge para finalizar o processo*/
@@ -1021,7 +1134,6 @@ int sortMerge(char *arq_name, char *arq_fname)
             fread(&reg[j].campo2, 30 * sizeof(char), 1, arq);
             fread(&reg[j].campo3, 20 * sizeof(char), 1, arq);
             fread(&reg[j].campo4, 10 * sizeof(char), 1, arq);
-            //printf("%d %s %s %s \n",reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
         }
         mergeSort(&reg, 0, 999);
         strcpy(sub_arq_name, "sub_arquivo");

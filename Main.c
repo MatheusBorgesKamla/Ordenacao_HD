@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
         else
         {
             for (int i = 0; i < n; i++)
-                printf("%d : %d %s %s %s \n",i+1,reg[i].campo1, reg[i].campo2, reg[i].campo3, reg[i].campo4);
+                printf("%d %s %s %s \n",reg[i].campo1, reg[i].campo2, reg[i].campo3, reg[i].campo4);
         }
         free(reg);
     }

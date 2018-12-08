@@ -32,9 +32,9 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2);
 
 int multiway_merging(char **arquivo, char **arq_fname, int num_arq);
 
-int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int num_arq);
+int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int num_arq, int cont_arq[]);
 
-REGISTRO Acha_menor(REGISTRO **reg, int n_reg, int cont, int pos_menor);
+void Acha_menor(REGISTRO reg[], int n_reg, REGISTRO* fin);
 
 int sortMerge(char *arq_name, char *arq_fname);
 
