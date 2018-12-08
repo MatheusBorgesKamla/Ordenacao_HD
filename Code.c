@@ -6,28 +6,28 @@
 /*Função responsável por gerar um vetor com um número n de registros*/
 void GeraDados(int n, REGISTRO *reg)
 {
-    int *campo1 = (int *)malloc(n * sizeof(int));
-    char **campo2 = (char **)malloc(n * sizeof(char *));
-    char **campo3 = (char **)malloc(n * sizeof(char *));
-    char **campo4 = (char **)malloc(n * sizeof(char *));
+    int *campo1 = (int *)malloc(n * sizeof(int)); //Cria um inteiro para o campo 1 e aloca memória para ele
+    char **campo2 = (char **)malloc(n * sizeof(char *)); // Cria um vetor de strings para o campo 2 e aloca memória
+    char **campo3 = (char **)malloc(n * sizeof(char *)); // Cria um vetor de strings para o campo 3 e aloca memória
+    char **campo4 = (char **)malloc(n * sizeof(char *)); // Cria um vetor de strings para o campo 4 e aloca memória
     for (int i = 0; i < n; i++)
     {
-        campo2[i] = (char *)malloc(30 * sizeof(char));
-        campo3[i] = (char *)malloc(20 * sizeof(char));
-        campo4[i] = (char *)malloc(11 * sizeof(char));
+        campo2[i] = (char *)malloc(30 * sizeof(char)); //Alocação de memória
+        campo3[i] = (char *)malloc(20 * sizeof(char)); //Alocação de memória
+        campo4[i] = (char *)malloc(11 * sizeof(char)); //Alocação de memória
     }
-    Gera_Campo1(n, campo1);
-    Gera_Campo2(n, campo2);
-    Gera_Campo3(n, campo3);
-    Gera_Campo4(n, campo4);
+    Gera_Campo1(n, campo1); //Chama a função que gera os dados do campo1
+    Gera_Campo2(n, campo2); //Chama a função que gera os dados do campo2
+    Gera_Campo3(n, campo3); //Chama a função que gera os dados do campo3
+    Gera_Campo4(n, campo4); //Chama a função que gera os dados do campo4
     for (int i = 0; i < n; i++)
     {
-        reg[i].campo1 = campo1[i];
+        reg[i].campo1 = campo1[i];       //Passa os valores para o registro que foi passado por referência
         strcpy(reg[i].campo2, campo2[i]);
         strcpy(reg[i].campo3, campo3[i]);
         strcpy(reg[i].campo4, campo4[i]);
     }
-    free(campo1);
+    free(campo1);   //Libera memória dos campos
     free(campo2);
     free(campo3);
     free(campo4);
@@ -36,30 +36,31 @@ void GeraDados(int n, REGISTRO *reg)
 um arquivo binário com eles salvos*/
 int GerarArquivo(int n, REGISTRO *reg, char *arq_name)
 {
-    FILE *arq = fopen(arq_name, "w+b");
-    if (arq == NULL)
+    FILE *arq = fopen(arq_name, "w+b"); //Cria e abre um arquivo para escrita
+    if (arq == NULL)  //Se o arquivo for nulo, retorna zero
     {
         return 0;
     }
-    char status = '0';
-    fwrite(&status, sizeof(char), 1, arq);
-    for (int i = 0; i < n; i++)
-    {
+    char status = '0';   //Seta o status como zero para começar a mexer no arquivo
+    fwrite(&status, sizeof(char), 1, arq); //Escreve o status zero no arquivo
+    for (int i = 0; i < n; i++)   //Percorre os n registros
+    {   //Escreve no arquivo os registros armazenados anteriormente em reg
         fwrite(&reg[i].campo1, sizeof(int), 1, arq);
         fwrite(&reg[i].campo2, 30 * sizeof(char), 1, arq);
         fwrite(&reg[i].campo3, 20 * sizeof(char), 1, arq);
         fwrite(&reg[i].campo4, 10 * sizeof(char), 1, arq);
     }
-    status = '1';
+    status = '1'; //Seta o status como 1, pois acabou de se mexer no arquivo
     rewind(arq);
-    fwrite(&status, sizeof(char), 1, arq);
-    fclose(arq);
+    fwrite(&status, sizeof(char), 1, arq); //Escreve esse status no arquivo
+    fclose(arq); //Fecha o arquivo
     return 1;
 }
 /*Função responsável por ler um arquivo binário com arq_name e passar os registros
 para um vetor de ponteiros reg e o total de registros salvos para o ponteiro n*/
 int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
 {
+    //Abre o arquivo com o nome recebido de parâmetro e testa se abriu certo
     FILE *arq = fopen(arq_name, "r+b");
     if (arq == NULL)
     {
@@ -75,25 +76,32 @@ int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
         fclose(arq);
         return 0;
     }
+    //Realiza o cálculo do número de registros no arquivo
     *n = *n - sizeof(char);
     *n = *n / 64; // 64 - número de bytes de um registro
-    //REGISTRO *re = (REGISTRO*) malloc((*n)*sizeof(REGISTRO));
+    //Aloco o vetor reg que receberá os resgistros
     *reg = (REGISTRO *)malloc(((*n + 1) * sizeof(REGISTRO)));
+    //Vetor auxiliar utilizado para realizar fread
     REGISTRO *a = (REGISTRO *)malloc((*n) * sizeof(REGISTRO));
+    //Escrevo o status no cabeçalho
     char status = '0';
     rewind(arq);
     fwrite(&status, sizeof(char), 1, arq);
     fseek(arq, sizeof(char), SEEK_SET);
+    //Leio campo a campo de cada registro passando do a para o reg
     for (int i = 0; i < *n; i++)
     {
         fread(&a[i].campo1, sizeof(int), 1, arq);
         fread(&a[i].campo2, 30 * sizeof(char), 1, arq);
         fread(&a[i].campo3, 20 * sizeof(char), 1, arq);
         fread(&a[i].campo4, 10 * sizeof(char), 1, arq);
+        //Passo como ultima posição do campo 4 o \0 para não printar lixo
         a[i].campo4[10] = '\0';
         reg[0][i] = a[i];
     }
+    //Libero o vetor a
     free(a);
+    //Volto o status para 1 e fecho o arquivo
     status = '1';
     rewind(arq);
     fwrite(&status, sizeof(char), 1, arq);
@@ -103,21 +111,24 @@ int LeArquivo(REGISTRO **reg, char *arq_name, int *n)
 /*Função responsável por gerar os dados do campo1 passando-os para o *vetor de tamanho n*/
 void Gera_Campo1(int n, int *vetor)
 {
+    //Variável i auxiliar para os loop e a indice guardará os valores sorteados aleatoriamente pela rand
     int i, indice;
+    //Crio um vetor de 50000 posições em que cada posção i possui o valor i
     int *aux = (int *)malloc(50000 * sizeof(int));
     for (i = 0; i < 50000; i++)
     {
         aux[i] = i;
     }
+    //Para 70% de n registros
     for (i = 0; i < n * 0.7; i++)
     {
-        indice = rand() % 50000;
-        while (aux[indice] == (-1))
+        indice = rand() % 50000; // gero um valor aleatório para o indice no intervalo de 0 - 50000
+        while (aux[indice] == (-1))//testo se a posição aux[indice] já não foi pega para assim não repetir
         {
-            indice = rand() % 50000;
+            indice = rand() % 50000; // se já foi pega (possui -1) resorteio até achar uma não pega
         }
-        vetor[i] = aux[indice];
-        aux[indice] = -1;
+        vetor[i] = aux[indice]; //passo o valor achado não repetido para o vetor[i]
+        aux[indice] = -1;//torno -1 essa posição pois peguei ela
     }
     /*indice = rand()%50000;
     while(aux[indice]==(-1)){
@@ -126,6 +137,8 @@ void Gera_Campo1(int n, int *vetor)
     for(i=n*0.7;i<n;i++){
         vetor[i] = aux[indice];
     }*/
+    //Para os outros 30% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
+    //eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
     i = 0.7 * n;
     while (i < n)
     {
@@ -156,62 +169,55 @@ void Gera_Campo1(int n, int *vetor)
 /*Função responsável por gerar os dados do campo2 passando-os para o *vetor de tamanho n*/
 void Gera_Campo2(int n, char *vetor[])
 {
-    int i, j, k, indice;
+    int i, j, k, indice; //Variáveis auxiliares
+    //Aqui, são escritos 100 palavras diferentes em um vetor de strings
     char aux[100][10] = {"GOD", "WAR", "SNIPER", "FIGHT", "BAD", "WEAPON", "FIRE", "ARMY", "ADVANCED", "GHOST", "CHICKEN", "GROW", "HIGH", "MAGIC", "WORLD", "ROCK", "BATTLE", "SNOW", "GAME", "YELLOW", "CALL", "BLACK", "OPS", "HACKER", "SOLDIER", "ZOMBIE", "DRAGONS", "SHIELD", "COLOSSUS", "SHADOW", "DIRTY", "TITANS", "BREAKING", "CRAZY", "NIGHT", "MUTANTS",
                          "HERO", "SPEED", "RACE", "SUN", "AGE", "EMPIRE", "WAKE", "AMNESIA", "AQUA", "LEGEND", "COUNTER", "KINGS", "DARK", "WATCH", "DOGS", "ORIGINS", "DEFEAT", "DAY", "DIRT", "EURO", "FAR", "CRY", "HONOR", "SIMULATOR", "DESTINY", "GRAND", "HITMAN", "BIOSHOCK", "BOARD", "CAUSE", "LAYERS", "DEAD", "LIFE", "STRANGE", "MAFIA", "MEDAL", "EARTH", "GOAT", "ORCS", "PORTAL", "ROCKET", "SLEEPING", "STAR", "SUPREME", "SURGEON", "TEAM", "FOREST", "WITCHER", "TROPICO", "TIBIA", "RAINBOW", "TALES", "ZELDA", "AUTO", "SIEGE", "ELDER", "SCROLL", "FARM", "HOTEL", "QUAKE", "HALF", "FEAR", "SOULS", "GREAT"};
-    char strings[9901][30];
-    for (i = 0; i < 100; i++)
+    char strings[9901][30]; //Cria um novo vetor de strings que irá guardar concatenações dessas palavras escritas acima
+    for (i = 0; i < 100; i++) //Percorre as 100 palavras
     {
-        strcpy(strings[i], aux[i]);
+        strcpy(strings[i], aux[i]); //Copia cada palavra para o novo vetor de strings
     }
     int cont = 100;
-    for (j = 0; j < 100; j++)
+    for (j = 0; j < 100; j++)  //Percorre novamente as 100 palavras
     {
         for (i = (j + 1); i < 100; i++)
         {
-            strcpy(strings[cont], strings[j]);
+            strcpy(strings[cont], strings[j]); //Aqui, vai concatenando as palavras duas a duas, de modo a gerar nomes de jogos diferentes entre si
             strcat(strings[cont], " ");
             strcat(strings[cont], strings[i]);
             cont++;
         }
     }
-    for (j = 0; j < 100; j++)
+    for (j = 0; j < 100; j++)  //Percorre mais uma vez as palavras
     {
         for (i = (j + 1); i < 100; i++)
         {
             for (k = (i + 1); k < 100; k++)
             {
-                strcpy(strings[cont], strings[j]);
+                strcpy(strings[cont], strings[j]);  //Aqui, as concatena novamente, mas agora 3 a 3, gerando mais nomes novos
                 strcat(strings[cont], " ");
                 strcat(strings[cont], strings[i]);
                 strcat(strings[cont], " ");
                 strcat(strings[cont], strings[k]);
                 cont++;
             }
-            break;
+            break;    //dá um break pois nesse ponto já foi gerado um número suficiente de nomes para serem escritos nos arquivos
         }
     }
-    /*printf("Contador: %d",cont);
-    for(i=0;i<9901;i++){
-        printf("%s -",strings[i]);
-    }*/
-    for (i = 0; i < n * 0.75; i++)
+
+    for (i = 0; i < n * 0.75; i++)   //Percorre 75% do total de registros digitados pelo usuário
     {
-        indice = rand() % 9901;
-        while (!strcmp(strings[indice], "*"))
+        indice = rand() % 9901; //Sorteia um valor para o indice
+        while (!strcmp(strings[indice], "*")) //Enquanto não tiver *, o nome do indice em questão ainda não foi utilizado
         {
-            indice = rand() % 9901;
+            indice = rand() % 9901;  //Se tiver "*", sorteia um novo índice
         }
         strcpy(vetor[i], strings[indice]);
         strcpy(strings[indice], "*");
     }
-    /*indice = rand()%9901;
-    while(!strcmp(strings[indice],"*")){
-            indice = rand()%9901;
-    }
-    for(i=n*0.75;i<n;i++){
-        strcpy(vetor[i],strings[indice]);
-    }*/
+//Para os outros 30% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
+//eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
     i = 0.75 * n;
     while (i < n)
     {
@@ -242,11 +248,15 @@ void Gera_Campo2(int n, char *vetor[])
 void Gera_Campo3(int n, char *vetor[])
 {
     int i, j, k, indice;
+    /*São escritas 100 palavras a mão e passadas para o vetor de strings aux */
     char aux[100][20] = {"UBI", "NINTENDO", "MICRO", "EA", "LG", "ROCKSTAR", "NEW", "ATLAS", "SIRIUS", "GIGA", "RIO", "BIT", "ROCKLAND", "WIZARD", "SWIFT", "AMAZON", "MANAGER", "YORK", "APPLE", "SILICON", "JDK", "ORACLE", "SYSTEM", "WARNER", "MARVEL", "SONY", "ACER", "LENOVO", "HP", "ATARI", "SPACE", "FOX", "DIGITAL", "PLAY", "SIMS", "SAMSUNG",
                          "RISE", "EUREKA", "RACE", "ALPHA", "LAMBDA", "OPEN", "CENTER", "WIN", "LINUX", "WIND", "HOME", "UPCOMING", "RECALL", "DATABASE", "RIDDLE", "AZTEC", "CELLAR", "FORSALE", "APEX", "INFLUENCE", "QUILL", "VS", "VISUAL", "UBUNTU", "TEXT", "MOZILA", "GOOGLE", "SEARCH", "CONFIG", "SIGMA", "TETA", "ADAPTER", "CAPCOM", "PENTA", "ROBOTIC", "SUBLIME", "SCIENCE", "GORILLA", "ULTIMATE", "LONDON", "ASUS", "UMBRELLA", "CIRCUIT", "ENJOY", "COOL", "ABSTRACT", "TOOL", "GARBAGE", "LOAD", "PROGRESS", "INC", "CODE", "STUDIO", "ENG", "DEVELOPMENT", "STOKE", "TECH", "JUNIOR", "GAMES", "SOFT", "ORG", "FOUND", "S.A.", "CORP"};
+    //É declarado o vetor que conterá todas as strings posspiveis geradas
+    //Esse numero 9901 foi obtido através de testes para um vetor bem maior e ai depois foi modificado para ficar certinho
     char strings[9901][20];
     for (i = 0; i < 100; i++)
     {
+        //As primeiras 100 posições de string possuiram somente uma palavra (o que tinha no aux)
         strcpy(strings[i], aux[i]);
     }
     int cont = 100;
@@ -254,6 +264,9 @@ void Gera_Campo3(int n, char *vetor[])
     {
         for (i = (j + 1); i < 100; i++)
         {
+            //A partir daqui começam a se concatenar as 100 primeiras com as outras sem se repetir
+            //a inicial ex: UBI NITENDO , UBI MICRO ....
+            // NITENDO MICRO, NINTENDO EA ...
             strcpy(strings[cont], strings[j]);
             strcat(strings[cont], " ");
             strcat(strings[cont], strings[i]);
@@ -262,6 +275,8 @@ void Gera_Campo3(int n, char *vetor[])
     }
     int tam, res;
     char aux2[20];
+    //Aqui começa a concatenar de três a três, também sem se repetir nenhuma das palavras
+    //da mesma forma de para duas porém agora para três
     for (j = 0; j < 100; j++)
     {
         for (i = (j + 1); i < 100; i++)
@@ -273,16 +288,12 @@ void Gera_Campo3(int n, char *vetor[])
                 strcat(strings[cont], strings[i]);
                 strcat(strings[cont], " ");
                 tam = strlen(strings[cont]) + strlen(strings[k]);
-                //printf("tam = %d ",tam);
                 if (tam >= 20)
                 {
                     res = 19 - strlen(strings[cont]);
                     strcpy(aux2, strings[k]);
                     aux2[res] = '\0';
-                    //printf("res = %d  %s",res,aux2);
                     strcat(strings[cont], aux2);
-                    //printf("-- teste --");
-                    //printf("%s ",strings[cont]);
                 }
                 else
                 {
@@ -293,10 +304,7 @@ void Gera_Campo3(int n, char *vetor[])
             break;
         }
     }
-    /*printf("Contador: %d",cont);
-    for(i=0;i<9901;i++){
-        printf("- %s  -",strings[i]);
-    }*/
+    //Aqui de 0 até 80% é realizado um rand para indice e com ele se acessa o vetor string que tem todas as strings geradas, se checa se ela não possui * que quer dizer que já foi pega, então assim garante que não há repetições
     for (i = 0; i < n * 0.8; i++)
     {
         indice = rand() % 9901;
@@ -307,13 +315,8 @@ void Gera_Campo3(int n, char *vetor[])
         strcpy(vetor[i], strings[indice]);
         strcpy(strings[indice], "*");
     }
-    /*indice = rand()%9901;
-    while(!strcmp(strings[indice],"*")){
-            indice = rand()%9901;
-    }
-    for(i=n*0.8;i<n;i++){
-        strcpy(vetor[i],strings[indice]);
-    }*/
+    //Para os outros 20% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
+    //eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
     i = 0.8 * n;
     while (i < n)
     {
@@ -340,11 +343,12 @@ void Gera_Campo3(int n, char *vetor[])
         i += 2;
     }
 }
-/*Função responsável por gerar os dados do campo4 passando-os para o *vetor de tamanho n*/
+/*Função responsável por gerar os dados do campo4 passando-os para o *vetor de tamanho n*//*Função responsável por gerar os dados do campo4 passando-os para o *vetor de tamanho n*/
 void Gera_Campo4(int n, char *vetor[])
 {
-    int i, j, k, indice;
-    char dia[30][4] = {"01/", "02/", "03/", "04/", "05/", "06/", "07/", "08/", "09/",
+    int i, j, k, indice; //Declara variáveis auxiliares
+    //Aqui, são escritas diversas datas diferentes
+    char dia[30][4] = {"01/", "02/", "03/", "04/", "05/", "06/", "07/", "08/", "09/", 
                        "10/", "11/", "12/", "13/", "14/", "15/", "16/", "17/", "18/", "19/", "20/", "21/",
                        "22/", "23/", "24/", "25/", "26/", "27/", "28/", "29/", "30/"};
     char mes[12][4] = {"01/", "02/", "03/", "04/", "05/", "06/", "07/", "08/", "09/",
@@ -353,41 +357,32 @@ void Gera_Campo4(int n, char *vetor[])
                        "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"};
     char strings[10440][11];
     int cont = 0;
-    for (i = 0; i < 29; i++)
+    for (i = 0; i < 29; i++)  //Percorre os dados escritos
     {
         for (j = 0; j < 12; j++)
         {
             for (k = 0; k < 30; k++)
             {
-                strcpy(strings[cont], dia[k]);
+                strcpy(strings[cont], dia[k]); //Vai concatenando dia mes e ano de modo a formar datas completas
                 strcat(strings[cont], mes[j]);
                 strcat(strings[cont], ano[i]);
                 cont++;
             }
         }
     }
-    /*printf("Contador: %d",cont);
-    for(i=0;i<10440;i++){
-        printf("%s -",strings[i]);
-    }*/
 
     for (i = 0; i < n * 0.85; i++)
     {
-        indice = rand() % 10440;
-        while (!strcmp(strings[indice], "*"))
+        indice = rand() % 10440;         //Sorteia um indice
+        while (!strcmp(strings[indice], "*")) //Se ele tiver *, então a data desse indice já foi utilizada
         {
-            indice = rand() % 10440;
+            indice = rand() % 10440;  //Nesse caso, sorteia uma nova data
         }
-        strcpy(vetor[i], strings[indice]);
-        strcpy(strings[indice], "*");
+        strcpy(vetor[i], strings[indice]);  //Passa essa data para o vetor[i]
+        strcpy(strings[indice], "*");      //Seta ela em strings como *, para indicar que já foi utilizada
     }
-    /*indice = rand()%10440;
-    while(!strcmp(strings[indice],"*")){
-            indice = rand()%10440;
-    }
-    for(i=n*0.85;i<n;i++){
-        strcpy(vetor[i],strings[indice]);
-    }*/
+ //Para os outros 30% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
+//eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
     i = 0.85 * n;
     while (i < n)
     {
@@ -532,8 +527,9 @@ int mergeArq(char *arq_name1, char *arq_name2, char *arq_fname)
     reg2[cont2] = reg_aux;
     while (1)
     {
-        teste = compara_reg(reg1[cont1], reg2[cont2]);
-        if (teste == 1)
+        teste = compara_reg(reg1[cont1], reg2[cont2]); //Compara reg1 com reg2 e passa o valor do menor para teste. Se 1 for menor, teste recebe 1, caso contrário, recebe 1
+        //Nos próximos condicionais, o valor de teste é checado e, de acordo com ele, é escrito ou o registro 1 ou o 2 no arquivo final
+        if (teste == 1) 
         {
             fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
             fwrite(&reg1[cont1].campo2, 30 * sizeof(char), 1, arq_fin);
@@ -690,7 +686,8 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
     reg2[cont2] = reg_aux;
     while (1)
     {
-        teste = compara_reg(reg1[cont1], reg2[cont2]);
+        teste = compara_reg(reg1[cont1], reg2[cont2]); //Compara reg1 com reg2 e passa o valor do menor para teste. Se 1 for menor, teste recebe 1, caso contrário, recebe 1
+        //Nos próximos condicionais, o valor de teste é checado e, de acordo com ele, é escrito ou o registro 1 ou o 2 no arquivo final
         if (teste == 1)
         {
             fwrite(&reg1[cont1].campo1, sizeof(int), 1, arq_fin);
@@ -761,23 +758,23 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
 dois registros retornando 1 caso reg1<reg2 , -1 caso reg2<reg1 e 0 caso reg1 = reg2*/
 int compara_reg(REGISTRO reg1, REGISTRO reg2)
 {
-    if (reg1.campo1 < reg2.campo1)
+    if (reg1.campo1 < reg2.campo1) //Compara o campo 1. Se o campo 1 do registro 1 for menor, retorna 1
     {
         return 1;
     }
-    else if (reg2.campo1 < reg1.campo1)
+    else if (reg2.campo1 < reg1.campo1) //Se o campo 1 do registro 2 for menor, retorna -1
     {
         return -1;
     }
-    else
+    else //Se eles forem iguais, passa para a análise do campo2
     {
-        int a, n;
-        if (strlen(reg1.campo2) < strlen(reg2.campo2))
+        int a, n; //Variáveis auxiliares
+        if (strlen(reg1.campo2) < strlen(reg2.campo2)) //Compara o tamanho do campo2 de cada registro e pega o menor
         {
             n = strlen(reg1.campo2);
             a = 1;
         }
-        else if (strlen(reg2.campo2) < strlen(reg1.campo2))
+        else if (strlen(reg2.campo2) < strlen(reg1.campo2))  //Compara o tamanho do campo2 de cada registro e pega o menor
         {
             n = strlen(reg2.campo2);
             a = -1;
@@ -787,28 +784,28 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
             n = strlen(reg1.campo2);
             a = 0;
         }
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < n; j++)  //Percorre o campo2 byte a byte(char por char), baseado no menor tamanho 
         {
-            if (reg1.campo2[j] < reg2.campo2[j])
+            if (reg1.campo2[j] < reg2.campo2[j])  //No momento em que uma posição de algum dos registros for menor, retorna 1 ou -1 de acordo com o registro
             {
                 return 1;
             }
-            else if (reg2.campo2[j] < reg1.campo2[j])
+            else if (reg2.campo2[j] < reg1.campo2[j]) //No momento em que uma posição de algum dos registros for menor, retorna 1 ou -1 de acordo com o registro
             {
                 return -1;
             }
-            else if (j == n - 1 && a == 1)
+            else if (j == n - 1 && a == 1) //No momento em que uma posição de algum dos registros for menor, retorna 1 ou -1 de acordo com o registro
             {
                 return 1;
             }
-            else if (j == n - 1 && a == -1)
+            else if (j == n - 1 && a == -1) //No momento em que uma posição de algum dos registros for menor, retorna 1 ou -1 de acordo com o registro
             {
                 return -1;
             }
         }
-        if (a == 0)
+        if (a == 0) //Se o campo 2 de ambos os registros for igual, vai para a análise do campo 3
         {
-            if (strlen(reg1.campo3) < strlen(reg2.campo3))
+            if (strlen(reg1.campo3) < strlen(reg2.campo3)) //Novamente, pega o menor comprimento dentre os dois camps 3 analisados
             {
                 n = strlen(reg1.campo3);
                 a = 1;
@@ -823,9 +820,9 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
                 n = strlen(reg1.campo3);
                 a = 0;
             }
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < n; j++) //Percorre char por char baseado no menor comprimento
             {
-                if (reg1.campo3[j] < reg2.campo3[j])
+                if (reg1.campo3[j] < reg2.campo3[j]) //Retorna 1 ou -1 baseado no menor valor de um ou outro registro, seguindo as regras defiinidas anteriormente
                 {
                     return 1;
                 }
@@ -842,10 +839,10 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
                     return 1;
                 }
             }
-            if (a == 0)
+            if (a == 0) //Se forem iguais, parte para a análise do campo 4
             {
                 int compare4;
-                for (int j = 6; j < 10; j++)
+                for (int j = 6; j < 10; j++) //Compara primeiramente a parte dos anos 
                 {
                     if (reg1.campo4[j] < reg2.campo4[j])
                     {
@@ -860,7 +857,7 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
                         compare4 = 0;
                     }
                 }
-                if (compare4 == 0)
+                if (compare4 == 0) //Se os anos forem iguais, compara os meses
                 {
                     for (int i = 3; i <= 4; i++)
                     {
@@ -873,9 +870,9 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
                             return -1;
                         }
                     }
-                    if (compare4 == 0)
+                    if (compare4 == 0) //Se possuirem mês igual eu comparo os dias até achar o menor deles
                     {
-                        //Se possuirem mês igual eu comparo os dias até achar o menor deles
+                        
                         for (int i = 0; i <= 1; i++)
                         {
                             if (reg1.campo4[i] < reg2.campo4[i])
@@ -1038,44 +1035,57 @@ int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int
 /*Função responsável que recebe um vetor de registros de cada K arquivo e realiza uma arvore de seleção através de recursão, pois compara de dois a dois e gera um novo vetor com os menores registros para o próxima interação recursiva. No caso de n_reg (números de registros) for ímpar ele comparada dois a dois desconsiderando o última, o qual é incluído na próxima geração*/
 void Acha_menor(REGISTRO reg[], int n_reg, REGISTRO* fin)
 {   
+    //Condição de parada quando o número de registro n_reg for igual a 1
     if(n_reg == 1)
     {
+        //Retorna o registro menor entre todos achados para fin
         *fin = reg[0];
     }
+    //Testo se o número de registro é par
     else if(n_reg%2 == 0)
     {
         REGISTRO novo_reg[n_reg/2];
         int teste, pos_menor, cont_arq = 0;
+        //Vou comparando os registros dois a dois
         for(int i=0; i < n_reg; i+=2)
         {
+            //Uso a compara reg para achar o menor
             teste = compara_reg(reg[i],reg[i+1]);
             if(teste >= 0)
                 pos_menor = i;
             else 
                 pos_menor = i+1;
+            //O registro menor é salvo no vetor novo_reg
             novo_reg[cont_arq] = reg[pos_menor];
             cont_arq++;
-            //printf("%d %s %s %s\n",reg[pos_menor].campo1,reg[pos_menor].campo2,reg[pos_menor].campo3,reg[pos_menor].campo4);
         }
+        //Chamo a próxima intereção passando o novo_vetor de menores obtidos e reduzindo o nro de
+        //arquivo em sua metade
         Acha_menor(novo_reg,n_reg/2,fin);
     }
     else
     {
+        //Como o número de registros é impar é calculado um novo n_reg da segunte forma
         int aux = (n_reg/2) + 1;
         REGISTRO novo_reg[aux];
         int teste, pos_menor, cont_arq = 0;
+        //Vou comparando os registros dois a dois
         for(int i=0; i < n_reg-1; i+=2)
         {
+            //Uso a compara reg para achar o menor
             teste = compara_reg(reg[i],reg[i+1]);
             if(teste >= 0)
                 pos_menor = i;
             else 
                 pos_menor = i+1;
+            //O registro menor é salvo no vetor novo_reg
             novo_reg[cont_arq] = reg[pos_menor];
             cont_arq++;
-            //printf("%d %s %s %s\n",reg[pos_menor].campo1,reg[pos_menor].campo2,reg[pos_menor].campo3,reg[pos_menor].campo4);
         }
+        //O ultimo registro que não é comparada é reservado para a próxima interação
         novo_reg[aux-1] = reg[n_reg-1];
+        //Chamo a próxima intereção passando o novo_vetor de menores obtidos e reduzindo o nro de
+        //arquivo em sua metade
         Acha_menor(novo_reg,aux,fin);
     }
 
@@ -1122,6 +1132,7 @@ int sortMerge(char *arq_name, char *arq_fname)
         sobra = n - (n_arq * 1000);
         n_arq++;
     }
+    //Vetor de strings utilizado para compor o nome dos subarquivos
     char num[10][4] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     char sub_arq_name[20];
     int n_aux;
@@ -1129,6 +1140,7 @@ int sortMerge(char *arq_name, char *arq_fname)
     int i;
     for (i = 0; i < n_arq; i++)
     {
+        //Leio de 1000 em 1000 do meu arquivo de entrada
         for (int j = 0; j < 1000; j++)
         {
             fread(&reg[j].campo1, sizeof(int), 1, arq);
@@ -1136,7 +1148,9 @@ int sortMerge(char *arq_name, char *arq_fname)
             fread(&reg[j].campo3, 20 * sizeof(char), 1, arq);
             fread(&reg[j].campo4, 10 * sizeof(char), 1, arq);
         }
+        //Chamo o mergeSort para ordenar os 1000 registros
         mergeSort(&reg, 0, 999);
+        //Aqui é realizado uma forma de compor os nomes dos subarquivos
         strcpy(sub_arq_name, "sub_arquivo");
         if (i < 10)
         {
@@ -1154,9 +1168,11 @@ int sortMerge(char *arq_name, char *arq_fname)
             n_aux = i - 20;
             strcat(sub_arq_name, num[n_aux]);
         }
+        //Assim que o nome é composto é gerado o sub_arquivo já com o statu
         sub_arq = fopen(sub_arq_name, "w+b");
         status = '0';
         fwrite(&status, sizeof(char), 1, sub_arq);
+        //Escrevo os 1000 registros ordenado no subarquivo 
         for (int j = 0; j < 1000; j++)
         {
             fwrite(&reg[j].campo1, sizeof(int), 1, sub_arq);
@@ -1164,25 +1180,30 @@ int sortMerge(char *arq_name, char *arq_fname)
             fwrite(&reg[j].campo3, 20 * sizeof(char), 1, sub_arq);
             fwrite(&reg[j].campo4, 10 * sizeof(char), 1, sub_arq);
         }
+        //Fecho o subarquivo com o status correto
         status = '1';
         rewind(sub_arq);
         fwrite(&status, sizeof(char), 1, sub_arq);
         fclose(sub_arq);
     }
+    //Após gerado todos os primeiros subarquivos com os 1000 registros é chamado a recursive_sortMerge para gerar os restantes de subarquivos 
     int x = recursive_sortMerge(i, 0, arq_fname);
     return 1;
 }
 /*Função recursiva que a partir dos primeiros subarquivos gerados realiza operação de merge com cada dois arquivos até gerar o arquivo final (arq_fname) com todos os registros de arq_name ordenados*/
 int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
 {
+    //vetor de strings utilizado para compor os nomes dos subarquivos
     char num[10][4] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
     char sub_arq_name1[20];
     char sub_arq_name2[20];
     char sub_arq_name3[20];
     int n_aux, i, cont_aux, n;
+    //Condição de parada da recursão para quando chegar em um subarquivo só  
     if (n_arq == 1)
     {
         char final[20];
+        //Aqui é realizado uma forma de compor os nomes dos subarquivos
         strcpy(final, "sub_arquivo");
         if (cont < 10)
         {
@@ -1200,16 +1221,16 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
             n_aux = cont - 20;
             strcat(final, num[n_aux]);
         }
-       
-        //printf("\n\n %s", final);
+        //Posteriormente é renomeada para o nome que o usário passou 
         rename(final, arq_fname);
         return 1;
     }
+    //Quando haver um número par de subarquivos
     else if (n_arq % 2 == 0)
     {
         n = cont + n_arq;
         cont_aux = n;
-        //printf("\nValor do cont_aux = %d \n", cont_aux);
+        //Aqui é realizado uma forma de compor os nomes dos subarquivos
         for (i = cont; i < n; i += 2)
         {
             strcpy(sub_arq_name1, "sub_arquivo");
@@ -1253,22 +1274,24 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
                 strcat(sub_arq_name3, num[n_aux]);
             }
             else if (cont_aux >= 30 && cont_aux < 40)
-            //printf("%s %s %s \n", sub_arq_name1, sub_arq_name2, sub_arq_name3);
+            //Os subarquivos são chmados de dois a dois para realizar o merge
+            //gerando um novo sunarquivo com o nome composto
             mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
         }
         cont = i;
-        //printf("cont = %d\n", cont);
+        //chama a recursive divindo pela metade o numero de arquivos e passando
+        //o contador para saber aonde parou na contagem dos subarquivos
         recursive_sortMerge(n_arq / 2, cont, arq_fname);
     }
     else
     {
+        //Nesse caso o número de arquivos é ímpar sendo assim o é calculado uma sobra
+        //, o último subarquivo recebido não vai ser considerado, sendo carregado para próxima operação 
         n = cont + n_arq;
         int sobra = n - 1;
-        //printf("\nValor da sobra = %d\n", sobra);
         n--;
         cont_aux = sobra + 1;
-        //printf("Valor do cont_aux = %d \n", cont_aux);
         for (i = cont; i < n; i += 2)
         {
             strcpy(sub_arq_name1, "sub_arquivo");
@@ -1311,14 +1334,15 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
                 n_aux = cont_aux - 20;
                 strcat(sub_arq_name3, num[n_aux]);
             }
-            //printf("%s %s %s \n", sub_arq_name1, sub_arq_name2, sub_arq_name3);
+            //Os subarquivos são chmados de dois a dois para realizar o merge
+            //gerando um novo sunarquivo com o nome composto
             mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
         }
         cont = i;
-        //printf("\ncont = %d", cont);
         n_arq = n_arq / 2;
         n_arq++;
+        //chama a recursive passando a contar da sobra calculada
         recursive_sortMerge(n_arq, sobra, arq_fname);
     }
 }
