@@ -894,8 +894,81 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
         }
     }
 }
+int multiway_merging(char **arquivos_entrada,char ** arq_fname ,int num_arq)
+{
+    //Abrindo os arquivos
+    FILE *arq[num_arq];
+
+    int n[num_arq]; //n será a quantidade de registros em um arquivo
+    
+    REGISTRO **reg = (REGISTRO **) malloc((num_arq) * sizeof(REGISTRO*)); //Criando  os registros para fazer análises 
+   
+    for(int i = 0; i < num_arq; i++)
+    {
+        arq[i] = fopen(arquivos_entrada[i], "r+b");
+        if(arq[i] == NULL)
+            return -1;
+        fseek(arq[i], 0, SEEK_END); //Pulando para o fim de cada arquivo
+        n[i] = ftell(arq[i]); //Lê o indicador de posição em bytes
+        if(n[i] == 0)
+            return 0;
+        //Calculando a quantidade de elementos de cada arquivo
+        n[i] = n[i] - sizeof(char);
+        n[i] = n[i] / 64; 
+        //Alocando memória para os registros
+        reg[i] = (REGISTRO *) malloc(n[i] * sizeof(REGISTRO));
+        //Escrevendo o status nos arquivos abertos
+        rewind(arq[i]);
+        char status = '0';
+        fwrite(&status, sizeof(char), 1, arq[i]);
+        fseek(arq[i], sizeof(char), SEEK_SET);
+    }
+    
+    FILE *arq_fin = fopen(arq_fname, "w+b");
+    if(arq_fin == NULL)
+        return -1;
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, arq_fin);
+    recursive_multMerge(reg, *arq, arq_fin, n, num_arq);
+    return 1;
+}
+
+int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int num_arq)
+{   
+    while(1)
+    {
+
+    }
+    
+    return 1;
+
+}
+
+REGISTRO Acha_menor(REGISTRO reg[], int n_reg, int cont, int pos_menor)
+{   
+    if(n_reg == 1)
+    {
+        return reg[pos_menor];
+    }
+    else if(n_reg%2 == 0)
+    {
+        REGISTRO novo_reg[n_reg/2];
+        for(int i=0; i < n_reg; i+=2)
+        {
+            compara_reg(reg[i],reg[i+1]);
+
+        }
+    }
+    else
+    {
+
+    }
+
+} 
+
+
 /*Função que recebe um arquivo inicial (arq_name) e inicia o processo de sortMerge do arquivo
-gerando os primeiros sub_arquivos ordenados contendo 250 registros cada um (equivalente a uma pág. de disco) e depois chama a recursive_sortMerge para finalizar o processo*/
+gerando os primeiros sub_arquivos ordenados contendo 1000 registros cada um (equivalente a 4 pág. de disco) e depois chama a recursive_sortMerge para finalizar o processo*/
 int sortMerge(char *arq_name, char *arq_fname)
 {
     FILE *arq = fopen(arq_name, "r+b");
@@ -916,23 +989,23 @@ int sortMerge(char *arq_name, char *arq_fname)
     //Calculo o número total de registros no arquivo (n)
     n = n - sizeof(char);
     n = n / 64;
-    //Aloco memória para os 1000 registros (4 páginas de disco) que poderei trabalhar no buffer (RAM)
-    REGISTRO *reg = (REGISTRO *)malloc((250) * sizeof(REGISTRO));
+    //Aloco memória para os 1000 registros (4 páginas de disco) que poderei trabalhar no buffer
+    REGISTRO *reg = (REGISTRO *)malloc((1000) * sizeof(REGISTRO));
     //Defino status 0 para o arquivo após abri-lo indicando que irei manipula-lo
     char status = '0';
     rewind(arq);
     fwrite(&status, sizeof(char), 1, arq);
     fseek(arq, sizeof(char), SEEK_SET);
     int n_arq, sobra = 0;
-    //Calculo do número de subarquivos necessários já considerando o caso de haver sobras (subarquivos que não ocupam necessariamente 16000 bytes == 250 registros)
-    if (n % 250 == 0)
+    //Calculo do número de subarquivos necessários já considerando o caso de haver sobras (subarquivos que não ocupam necessariamente 16000*4 bytes == 1000 registros)
+    if (n % 1000 == 0)
     {
-        n_arq = n / 250;
+        n_arq = n / 1000;
     }
     else
     {
-        n_arq = n / 250;
-        sobra = n - (n_arq * 250);
+        n_arq = n / 1000;
+        sobra = n - (n_arq * 1000);
         n_arq++;
     }
     char num[10][4] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -942,7 +1015,7 @@ int sortMerge(char *arq_name, char *arq_fname)
     int i;
     for (i = 0; i < n_arq; i++)
     {
-        for (int j = 0; j < 250; j++)
+        for (int j = 0; j < 1000; j++)
         {
             fread(&reg[j].campo1, sizeof(int), 1, arq);
             fread(&reg[j].campo2, 30 * sizeof(char), 1, arq);
@@ -950,7 +1023,7 @@ int sortMerge(char *arq_name, char *arq_fname)
             fread(&reg[j].campo4, 10 * sizeof(char), 1, arq);
             //printf("%d %s %s %s \n",reg[i].campo1,reg[i].campo2,reg[i].campo3,reg[i].campo4);
         }
-        mergeSort(&reg, 0, 249);
+        mergeSort(&reg, 0, 999);
         strcpy(sub_arq_name, "sub_arquivo");
         if (i < 10)
         {
@@ -971,7 +1044,7 @@ int sortMerge(char *arq_name, char *arq_fname)
         sub_arq = fopen(sub_arq_name, "w+b");
         status = '0';
         fwrite(&status, sizeof(char), 1, sub_arq);
-        for (int j = 0; j < 250; j++)
+        for (int j = 0; j < 1000; j++)
         {
             fwrite(&reg[j].campo1, sizeof(int), 1, sub_arq);
             fwrite(&reg[j].campo2, 30 * sizeof(char), 1, sub_arq);
@@ -1014,19 +1087,7 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
             n_aux = cont - 20;
             strcat(final, num[n_aux]);
         }
-        else if (cont >= 30 && cont < 40)
-        {
-            strcat(final, num[3]);
-            n_aux = cont - 30;
-            strcat(final, num[n_aux]);
-            ;
-        }
-        else if (cont >= 40 && cont < 50)
-        {
-            strcat(final, num[4]);
-            n_aux = cont - 40;
-            strcat(final, num[n_aux]);
-        }
+       
         //printf("\n\n %s", final);
         rename(final, arq_fname);
         return 1;
@@ -1062,22 +1123,6 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
                 strcat(sub_arq_name1, num[n_aux]);
                 strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (i >= 30 && i < 40)
-            {
-                strcat(sub_arq_name1, num[3]);
-                strcat(sub_arq_name2, num[3]);
-                n_aux = i - 30;
-                strcat(sub_arq_name1, num[n_aux]);
-                strcat(sub_arq_name2, num[n_aux + 1]);
-            }
-            else if (i >= 40 && i < 50)
-            {
-                strcat(sub_arq_name1, num[4]);
-                strcat(sub_arq_name2, num[4]);
-                n_aux = i - 40;
-                strcat(sub_arq_name1, num[n_aux]);
-                strcat(sub_arq_name2, num[n_aux + 1]);
-            }
             if (cont_aux < 10)
             {
                 strcat(sub_arq_name3, num[cont_aux]);
@@ -1095,18 +1140,6 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
                 strcat(sub_arq_name3, num[n_aux]);
             }
             else if (cont_aux >= 30 && cont_aux < 40)
-            {
-                strcat(sub_arq_name3, num[3]);
-                n_aux = cont_aux - 30;
-                strcat(sub_arq_name3, num[n_aux]);
-            }
-            else if (cont_aux >= 40 && cont_aux < 50)
-            {
-                strcat(sub_arq_name3, num[4]);
-                n_aux = cont_aux - 40;
-                strcat(sub_arq_name3, num[n_aux]);
-            }
-
             //printf("%s %s %s \n", sub_arq_name1, sub_arq_name2, sub_arq_name3);
             mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
@@ -1149,22 +1182,6 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
                 strcat(sub_arq_name1, num[n_aux]);
                 strcat(sub_arq_name2, num[n_aux + 1]);
             }
-            else if (i >= 30 && i < 40)
-            {
-                strcat(sub_arq_name1, num[3]);
-                strcat(sub_arq_name2, num[3]);
-                n_aux = i - 30;
-                strcat(sub_arq_name1, num[n_aux]);
-                strcat(sub_arq_name2, num[n_aux + 1]);
-            }
-            else if (i >= 40 && i < 50)
-            {
-                strcat(sub_arq_name1, num[4]);
-                strcat(sub_arq_name2, num[4]);
-                n_aux = i - 40;
-                strcat(sub_arq_name1, num[n_aux]);
-                strcat(sub_arq_name2, num[n_aux + 1]);
-            }
             if (cont_aux < 10)
             {
                 strcat(sub_arq_name3, num[cont_aux]);
@@ -1181,19 +1198,6 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
                 n_aux = cont_aux - 20;
                 strcat(sub_arq_name3, num[n_aux]);
             }
-            else if (cont_aux >= 30 && cont_aux < 40)
-            {
-                strcat(sub_arq_name3, num[3]);
-                n_aux = cont_aux - 30;
-                strcat(sub_arq_name3, num[n_aux]);
-            }
-            else if (cont_aux >= 40 && cont_aux < 50)
-            {
-                strcat(sub_arq_name3, num[4]);
-                n_aux = cont_aux - 40;
-                strcat(sub_arq_name3, num[n_aux]);
-            }
-
             //printf("%s %s %s \n", sub_arq_name1, sub_arq_name2, sub_arq_name3);
             mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;

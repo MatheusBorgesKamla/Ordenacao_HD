@@ -59,7 +59,7 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            mergeSort(&reg, 0, n);
+            mergeSort(&reg, 0, n-1);
             if (GerarArquivo(n, reg, argv[3]))
                 printf("Arquivo gerado.");
             else
@@ -104,19 +104,24 @@ int main(int argc, char const *argv[])
         free(reg1);
         free(reg2);
     }
-    else if(!strcmp(argv[1], "6"))
+    else if(!strcmp(argv[1], "6") && argc >= 5)
     {
-        REGISTRO reg1 = {93,"GOD WAR","EA GAMES","31/12/2001"};
-        REGISTRO reg2 = {1993,"GOD WAR","EA GAMES","31/12/2001"};
-        int n = compara_reg(reg1,reg2);
-        if(n == 1){
-            printf("reg1 < reg2");
-        }else if (n == -1){
-            printf("reg2 < reg1");
-        }else{
-            printf("reg2 == reg1");
+        char **arquivos_name = (char **) malloc((argc-2)*sizeof(char*));
+        int j = 0;
+        for(int i = 2; i < argc-1; i++)
+        {
+            arquivos_name[j] = argv[i];
+            j++;
         }
+        int teste = multiway_merging(arquivos_name, argv[argc-1] ,j); 
+        if(teste == -1)
+            printf("Falha no processamento.");
+        else if(teste == 0)
+            printf("Um dos arquivos esta vazio.");
+        else
+            printf("Arquivo gerado.");
 
+        free(arquivos_name);
     }
     else if (!strcmp(argv[1], "7") && argc == 4)
     {
