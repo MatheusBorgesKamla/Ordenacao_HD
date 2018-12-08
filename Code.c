@@ -894,6 +894,7 @@ int compara_reg(REGISTRO reg1, REGISTRO reg2)
         }
     }
 }
+/*Funçao responsável pelo processo inicial de manipulação dos K arquivos, como sua abertura, escrita do status, leitura dos primeiros registros de cada arquivo, criação do arquivo final e depois de chamar a recursive_multMerge fechar os arquivos após manipulação*/
 int multiway_merging(char **arquivos_entrada,char ** arq_fname ,int num_arq)
 {
     //Abrindo os arquivos
@@ -952,7 +953,7 @@ int multiway_merging(char **arquivos_entrada,char ** arq_fname ,int num_arq)
     fclose(arq_fin);
     return 1;
 }
-
+/*Função que irá ir realizando a leitura dos arquivos e chamando a Acha_menor para encontrar o menor entre os lidos e escrevendo esse no arquivo final, quando um dos arquivos acaba a função é chamada recursivamente, desconsiderando especificamente aquele arquivo*/ 
 int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int num_arq, int cont_arq[])
 {   
     REGISTRO reg_aux; //Registro auxiliar utilizado para leitura dos registros dos arquivos
@@ -1034,7 +1035,7 @@ int recursive_multMerge(REGISTRO **reg, FILE *arq[], FILE *arq_fin, int n[], int
     //recursive_multMerge(novo_reg,novos_arquivos,arq_fin,novo_n,num_arq--,novo_cont_arq);*/
     return 1;
 }
-
+/*Função responsável que recebe um vetor de registros de cada K arquivo e realiza uma arvore de seleção através de recursão, pois compara de dois a dois e gera um novo vetor com os menores registros para o próxima interação recursiva. No caso de n_reg (números de registros) for ímpar ele comparada dois a dois desconsiderando o última, o qual é incluído na próxima geração*/
 void Acha_menor(REGISTRO reg[], int n_reg, REGISTRO* fin)
 {   
     if(n_reg == 1)
