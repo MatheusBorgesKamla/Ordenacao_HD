@@ -101,8 +101,7 @@ int main(int argc, char const *argv[])
         {
             printf("Arquivo gerado.");
         }
-        free(reg1);
-        free(reg2);
+        
     }
     else if(!strcmp(argv[1], "6") && argc >= 5)
     {

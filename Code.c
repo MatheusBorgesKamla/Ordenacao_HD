@@ -216,8 +216,8 @@ void Gera_Campo2(int n, char *vetor[])
         strcpy(vetor[i], strings[indice]);
         strcpy(strings[indice], "*");
     }
-//Para os outros 30% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
-//eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
+    //Para os outros 30% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
+    //eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
     i = 0.75 * n;
     while (i < n)
     {
@@ -382,7 +382,7 @@ void Gera_Campo4(int n, char *vetor[])
         strcpy(strings[indice], "*");      //Seta ela em strings como *, para indicar que já foi utilizada
     }
  //Para os outros 30% eu vou realizando a mesma coisa porém ao pegar um valor não repetido
-//eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
+ //eu o repito, sendo assim repetições aos pares, e caso os 30% de n for ímpar a última interação é repetida 3 vezes
     i = 0.85 * n;
     while (i < n)
     {
@@ -741,6 +741,7 @@ int matching(char *arq_name1, char *arq_name2, char *arq_fname)
             break;
         }
     }
+    
     //Retorno o status de cada arquivo para 1 para agora poder fecha-los
     status = '1';
     rewind(arq1);
@@ -1276,6 +1277,7 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
             else if (cont_aux >= 30 && cont_aux < 40)
             //Os subarquivos são chmados de dois a dois para realizar o merge
             //gerando um novo sunarquivo com o nome composto
+            printf("");
             mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
         }
@@ -1336,6 +1338,7 @@ int recursive_sortMerge(int n_arq, int cont, char *arq_fname)
             }
             //Os subarquivos são chmados de dois a dois para realizar o merge
             //gerando um novo sunarquivo com o nome composto
+            printf("");
             mergeArq(sub_arq_name1, sub_arq_name2, sub_arq_name3);
             cont_aux++;
         }
